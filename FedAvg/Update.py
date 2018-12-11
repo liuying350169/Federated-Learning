@@ -61,9 +61,9 @@ class LocalUpdate(object):
                 if self.args.verbose and batch_idx % 10 == 0:
                     print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                         iter, batch_idx * len(images), len(self.ldr_train.dataset),
-                               100. * batch_idx / len(self.ldr_train), loss.data[0]))
-                self.tb.add_scalar('loss', loss.data[0])
-                batch_loss.append(loss.data[0])
+                               100. * batch_idx / len(self.ldr_train), loss.item()))
+                self.tb.add_scalar('loss', loss.item())
+                batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
@@ -92,4 +92,4 @@ class LocalUpdate(object):
             labels = labels.cpu()
         y_pred = np.argmax(log_probs.data, axis=1)
         acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
-        return  acc, loss.data[0]
+        return  acc, loss.item()
