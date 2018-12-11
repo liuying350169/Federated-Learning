@@ -18,7 +18,11 @@ class DatasetSplit(Dataset):
         return len(self.idxs)
 
     def __getitem__(self, item):
-        image, label = self.dataset[self.idxs[item]]
+        #error liuying
+        #only integers, slices (`:`), ellipsis (`...`), None and long or byte Variables are valid indices (got numpy.float64)
+        #print("item",item)
+        #print("self.idxs[item]",self.idxs[item])
+        image, label = self.dataset[int(self.idxs[item])]
         return image, label
 
 
