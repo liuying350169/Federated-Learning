@@ -31,7 +31,7 @@ def args_parser():
     parser.add_argument('--iid', type=int, default=0, help='whether i.i.d or not, 1 for iid, 0 for non-iid')
     parser.add_argument('--num_classes', type=int, default=10, help="number of classes")
     parser.add_argument('--num_channels', type=int, default=3, help="number of channels of imges")
-    parser.add_argument('--gpu', type=int, default=1, help="GPU ID")
+    parser.add_argument('--gpu', type=int, default=0, help="GPU ID")
     parser.add_argument('--stopping_rounds', type=int, default=10, help='rounds of early stopping')
     parser.add_argument('--verbose', type=int, default=1, help='verbose print, 1 for True, 0 for False')
     parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
