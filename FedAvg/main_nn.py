@@ -29,7 +29,7 @@ def test(net_g, data_loader):
             data, target = data.cuda(), target.cuda()
         data, target = autograd.Variable(data, volatile=True), autograd.Variable(target)
         log_probs = net_g(data)
-        test_loss += F.nll_loss(log_probs, target, size_average=False).data[0]
+        test_loss += F.nll_loss(log_probs, target, size_average=False).item()
         y_pred = log_probs.data.max(1, keepdim=True)[1]
         correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
 
