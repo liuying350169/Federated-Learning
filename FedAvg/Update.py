@@ -34,7 +34,8 @@ class LocalUpdate(object):
         self.tb = tb
 
     def train_val_test(self, dataset, idxs):
-        # split train, validation, and test
+        #split train, validation, and test
+        #every user have 600 images 0-420 for train , 420-480 for validation, 480 - 600 for test
         idxs_train = idxs[:420]
         idxs_val = idxs[420:480]
         idxs_test = idxs[480:]

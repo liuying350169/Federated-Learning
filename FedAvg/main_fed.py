@@ -116,7 +116,10 @@ if __name__ == '__main__':
     for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
         m = max(int(args.frac * args.num_users), 1)
+        #m is select how many ready client to use， default is 10
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)
+
+        #for every select users
         for idx in idxs_users:
             local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx], tb=summary)
             w, loss = local.update_weights(net=copy.deepcopy(net_glob))
