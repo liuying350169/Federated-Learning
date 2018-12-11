@@ -29,9 +29,13 @@ def mnist_noniid(dataset, num_users):
     :return:
     """
     num_shards, num_imgs = 200, 300
+    #num_shards is 200, and idx_shard is 0-199
     idx_shard = [i for i in range(num_shards)]
+    #dict_users is range in num_users  default is 100
     dict_users = {i: np.array([]) for i in range(num_users)}
+    #idxs = 60000, 60000 is devide into 200 parts, and 300 images each part
     idxs = np.arange(num_shards*num_imgs)
+
     labels = dataset.train_labels.numpy()
 
     # sort labels
@@ -45,6 +49,37 @@ def mnist_noniid(dataset, num_users):
         idx_shard = list(set(idx_shard) - rand_set)
         for rand in rand_set:
             dict_users[i] = np.concatenate((dict_users[i], idxs[rand*num_imgs:(rand+1)*num_imgs]), axis=0)
+    return dict_users
+
+
+def mnist_noniid_extram(dataset, num_users):
+    """
+    Sample non-I.I.D client data from MNIST dataset
+    :param dataset:
+    :param num_users:
+    :return:
+    """
+    num_shards, num_imgs = 200, 300
+    # num_shards is 200, and idx_shard is 0-199
+    idx_shard = [i for i in range(num_shards)]
+    # dict_users is range in num_users  default is 100
+    dict_users = {i: np.array([]) for i in range(num_users)}
+    # idxs = 60000, 60000 is devide into 200 parts, and 300 images each part
+    idxs = np.arange(num_shards * num_imgs)
+
+    labels = dataset.train_labels.numpy()
+
+    # sort labels
+    idxs_labels = np.vstack((idxs, labels))
+    idxs_labels = idxs_labels[:, idxs_labels[1, :].argsort()]
+    idxs = idxs_labels[0, :]
+
+    # divide and assign
+    for i in range(num_users):
+        rand_set = set(np.random.choice(idx_shard, 2, replace=False))
+        idx_shard = list(set(idx_shard) - rand_set)
+        for rand in rand_set:
+            dict_users[i] = np.concatenate((dict_users[i], idxs[rand * num_imgs:(rand + 1) * num_imgs]), axis=0)
     return dict_users
 
 
