@@ -110,8 +110,8 @@ if __name__ == '__main__':
             if batch_idx % 50 == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
-                           100. * batch_idx / len(train_loader), loss.data[0]))
-            batch_loss.append(loss.data[0])
+                           100. * batch_idx / len(train_loader), loss.item()))
+            batch_loss.append(loss.item())
         loss_avg = sum(batch_loss)/len(batch_loss)
         print('\nTrain loss:', loss_avg)
         list_loss.append(loss_avg)
