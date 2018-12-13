@@ -41,7 +41,6 @@ def mnist_noniid(dataset, num_users):
     idxs = np.arange(num_shards*num_imgs)
     #print(idxs)
 
-
     #labels is dataset's label
     #len is 60000
     #it is real label
@@ -74,10 +73,10 @@ def mnist_noniid(dataset, num_users):
         rand_set = set(np.random.choice(idx_shard, 2, replace=False))
         #print(rand_set)
         idx_shard = list(set(idx_shard) - rand_set)
-        print(idx_shard)
+        #print(idx_shard)
         for rand in rand_set:
             dict_users[i] = np.concatenate((dict_users[i], idxs[rand*num_imgs:(rand+1)*num_imgs]), axis=0)
-    #print(len(dict_users[0]))
+    print(dict_users[0])
     #finally return each user have which 600 images ,every user have a array contain 600 ge number
     return dict_users
 
