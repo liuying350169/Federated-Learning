@@ -48,7 +48,6 @@ def mnist_noniid(dataset, num_users):
     #print(len(labels))
     # for i in labels:
     #     print(labels[i])
-
     # sort labels
     #idxs_labels is the match between 0-59999 and the real labels of dataset
     idxs_labels = np.vstack((idxs, labels))

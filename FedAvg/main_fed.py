@@ -52,6 +52,10 @@ if __name__ == '__main__':
     # parse args
     args = args_parser()
 
+    #write args to file
+    f = open('./test.txt', 'a')
+    print(args,file=f)
+    f.close()
     # define paths
     path_project = os.path.abspath('..')
 
