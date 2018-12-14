@@ -67,14 +67,14 @@ class LocalUpdate(object):
                     #iter,   batch_idx * len(images), len(self.ldr_train.dataset)
                     #100. * batch_idx / len(self.ldr_train)
                     #loss.item()
-                    f = open('./test.txt','a')
-                    print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        iter, batch_idx * len(images), len(self.ldr_train.dataset),
-                               100. * batch_idx / len(self.ldr_train), loss.item()),file=f)
-                    print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        iter, batch_idx * len(images), len(self.ldr_train.dataset),
-                               100. * batch_idx / len(self.ldr_train), loss.item()))
-                    f.close()
+                    # f = open('./test.txt','a')
+                    # print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    #     iter, batch_idx * len(images), len(self.ldr_train.dataset),
+                    #            100. * batch_idx / len(self.ldr_train), loss.item()),file=f)
+                    # print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    #     iter, batch_idx * len(images), len(self.ldr_train.dataset),
+                    #            100. * batch_idx / len(self.ldr_train), loss.item()))
+                    # f.close()
 
                 # if iter%10 == 0:
                 #     # testing
