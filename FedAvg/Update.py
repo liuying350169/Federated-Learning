@@ -25,7 +25,6 @@ class DatasetSplit(Dataset):
         image, label = self.dataset[int(self.idxs[item])]
         return image, label
 
-
 class LocalUpdate(object):
     def __init__(self, args, dataset, idxs, tb):
         self.args = args
@@ -68,7 +67,6 @@ class LocalUpdate(object):
                     #iter,   batch_idx * len(images), len(self.ldr_train.dataset)
                     #100. * batch_idx / len(self.ldr_train)
                     #loss.item()
-
                     f = open('./test.txt','a')
                     print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                         iter, batch_idx * len(images), len(self.ldr_train.dataset),
