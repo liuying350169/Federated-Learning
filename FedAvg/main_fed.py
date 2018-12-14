@@ -37,6 +37,10 @@ def test(net_g, data_loader, args):
         correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
 
     test_loss /= len(data_loader.dataset)
+    f = open('./test.txt', 'a')
+    print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
+        test_loss, correct, len(data_loader.dataset),
+        100. * correct / len(data_loader.dataset)),file=f)
     print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(data_loader.dataset),
         100. * correct / len(data_loader.dataset)))
@@ -151,5 +155,8 @@ if __name__ == '__main__':
         acc, loss = net_local.test(net=net_glob)
         list_acc.append(acc)
         list_loss.append(loss)
+
+    f = open('./test.txt', 'a')
     print("average acc: {:.2f}%".format(100.*sum(list_acc)/len(list_acc)))
+    print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)),file=f)
 
