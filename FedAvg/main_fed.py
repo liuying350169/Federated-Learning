@@ -44,6 +44,7 @@ def test(net_g, data_loader, args):
     print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(data_loader.dataset),
         100. * correct / len(data_loader.dataset)))
+    f.close()
     return correct, test_loss
 
 
@@ -159,4 +160,5 @@ if __name__ == '__main__':
     f = open('./test.txt', 'a')
     print("average acc: {:.2f}%".format(100.*sum(list_acc)/len(list_acc)))
     print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)),file=f)
+    f.close()
 
