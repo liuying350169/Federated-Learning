@@ -139,7 +139,19 @@ if __name__ == '__main__':
         # print loss
         loss_avg = sum(loss_locals) / len(loss_locals)
         if args.epochs % 10 == 0:
+            list_acc, list_loss = [], []
+            net_glob.eval()
+            for c in tqdm(range(args.num_users)):
+                net_local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[c], tb=summary)
+                acc, loss = net_local.test(net=net_glob)
+                list_acc.append(acc)
+                list_loss.append(loss)
+            f = open('./test.txt', 'a')
             print('\nTrain loss:', loss_avg)
+            print('\nTrain loss:', loss_avg,file=f)
+            print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)))
+            print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)), file=f)
+            f.close()
         loss_train.append(loss_avg)
 
     # plot loss curve

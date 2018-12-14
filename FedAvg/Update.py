@@ -76,6 +76,21 @@ class LocalUpdate(object):
                                100. * batch_idx / len(self.ldr_train), loss.item()))
                     f.close()
 
+                # if iter%10 == 0:
+                #     # testing
+                #     list_acc, list_loss = [], []
+                #     net_glob.eval()
+                #     for c in tqdm(range(args.num_users)):
+                #         net_local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[c], tb=summary)
+                #         acc, loss = net_local.test(net=net_glob)
+                #         list_acc.append(acc)
+                #         list_loss.append(loss)
+                #
+                #     f = open('./test.txt', 'a')
+                #     print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)))
+                #     print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)), file=f)
+                #     f.close()
+
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
