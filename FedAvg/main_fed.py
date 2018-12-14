@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from torch import autograd
 from tensorboardX import SummaryWriter
 
-from sampling import mnist_iid, mnist_noniid, cifar_iid
+from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram
 from options import args_parser
 from Update import LocalUpdate
 from FedNets import MLP, CNNMnist, CNNCifar
@@ -69,8 +69,10 @@ if __name__ == '__main__':
                        transforms.Normalize((0.1307,), (0.3081,))
                    ]))
         # sample users
-        if args.iid:
+        if args.iid == 1:
             dict_users = mnist_iid(dataset_train, args.num_users)
+        elif args.iid == 2:
+            dict_users = mnist_noniid_extram(dataset_train, args.num_users)
         else:
             dict_users = mnist_noniid(dataset_train, args.num_users)
     elif args.dataset == 'cifar':
@@ -85,6 +87,8 @@ if __name__ == '__main__':
     else:
         exit('Error: unrecognized dataset')
     img_size = dataset_train[0][0].shape
+
+
 
     # build model
     if args.model == 'cnn' and args.dataset == 'cifar':
@@ -124,9 +128,13 @@ if __name__ == '__main__':
     val_acc_list, net_list = [], []
     for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
-        m = max(int(args.frac * args.num_users), 1)
-        #m is select how many ready client to use， default is 10
-        idxs_users = np.random.choice(range(args.num_users), m, replace=False)
+        if(args.num_users == 5):
+            m = 5
+            idxs_users = np.random.choice(range(args.num_users), m, replace=False)
+        else:
+            m = max(int(args.frac * args.num_users), 1)
+            #m is select how many ready client to use， default is 10
+            idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
         #for every select users
         for idx in idxs_users:

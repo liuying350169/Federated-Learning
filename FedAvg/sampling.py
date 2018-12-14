@@ -87,13 +87,15 @@ def mnist_noniid_extram(dataset, num_users):
     :param num_users:
     :return:
     """
-    num_shards, num_imgs = 100, 600
+    num_users =5
+    #finally divide into 5
+    #num_shards, num_imgs = 200, 300
     # num_shards is 200, and idx_shard is 0-199
-    idx_shard = [i for i in range(num_shards)]
+    #idx_shard = [i for i in range(num_shards)]
     # dict_users is range in num_users  default is 100
     dict_users = {i: np.array([]) for i in range(num_users)}
     # idxs = 60000, 60000 is devide into 200 parts, and 300 images each part
-    idxs = np.arange(num_shards * num_imgs)
+    idxs = np.arange(len(dataset))
 
     labels = dataset.train_labels.numpy()
 
@@ -101,13 +103,25 @@ def mnist_noniid_extram(dataset, num_users):
     idxs_labels = np.vstack((idxs, labels))
     idxs_labels = idxs_labels[:, idxs_labels[1, :].argsort()]
     idxs = idxs_labels[0, :]
+    p1 = idxs[0:12000]
+    p2 = idxs[12000:24000]
+    p3 = idxs[24000:36000]
+    p4 = idxs[36000:48000]
+    p5 = idxs[48000:60000]
+    print(p1)
 
     # divide and assign
     for i in range(num_users):
-        rand_set = set(np.random.choice(idx_shard, 1, replace=False))
-        idx_shard = list(set(idx_shard) - rand_set)
-        for rand in rand_set:
-            dict_users[i] = np.concatenate((dict_users[i], idxs[rand * num_imgs:(rand + 1) * num_imgs]), axis=0)
+        if(i==0):
+            dict_users[i] = p1
+        if(i==1):
+            dict_users[i] = p2
+        if(i==2):
+            dict_users[i] = p3
+        if(i==3):
+            dict_users[i] = p4
+        if(i==4):
+            dict_users[i] = p5
     return dict_users
 
 
@@ -134,4 +148,5 @@ if __name__ == '__main__':
                                    ]))
     num = 100
     d = mnist_noniid(dataset_train, num)
+    e = mnist_noniid_extram(dataset_train, num)
     print("good")
