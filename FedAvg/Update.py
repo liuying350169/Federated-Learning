@@ -27,6 +27,7 @@ class DatasetSplit(Dataset):
 
 class LocalUpdate(object):
     def __init__(self, args, dataset, idxs, tb):
+        #idxs is one selected user's imgs list
         self.args = args
         self.loss_func = nn.NLLLoss()
         self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, list(idxs))
@@ -35,9 +36,16 @@ class LocalUpdate(object):
     def train_val_test(self, dataset, idxs):
         #split train, validation, and test
         #every user have 600 images 0-420 for train , 420-480 for validation, 480 - 600 for test
-        idxs_train = idxs[:420]
-        idxs_val = idxs[420:480]
-        idxs_test = idxs[480:]
+
+        #error
+        total = len(idxs)
+        idxs_train = idxs[0:int(0.7*total)]
+        idxs_val = idxs[int(0.7*total):int(0.8*total)]
+        idxs_test = idxs[int(0.8*total):int(1*total)]
+
+        # idxs_train = idxs[:420]
+        # idxs_val = idxs[420:480]
+        # idxs_test = idxs[480:]
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
         test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
@@ -117,3 +125,6 @@ class LocalUpdate(object):
         y_pred = np.argmax(log_probs.data, axis=1)
         acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
         return  acc, loss.item()
+
+# if __name__ == "__main__":
+#     u = LocalUpdate()

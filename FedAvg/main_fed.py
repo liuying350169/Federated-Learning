@@ -72,6 +72,7 @@ if __name__ == '__main__':
         if args.iid == 1:
             dict_users = mnist_iid(dataset_train, args.num_users)
         elif args.iid == 2:
+            #return 5 shards and each shard has 12000 imgs
             dict_users = mnist_noniid_extram(dataset_train, args.num_users)
         else:
             dict_users = mnist_noniid(dataset_train, args.num_users)
@@ -138,6 +139,8 @@ if __name__ == '__main__':
 
         #for every select users
         for idx in idxs_users:
+            #use LocalUpdate to update weight
+            #train_test_validate has [] [] []
             local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx], tb=summary)
             w, loss = local.update_weights(net=copy.deepcopy(net_glob))
             w_locals.append(copy.deepcopy(w))
