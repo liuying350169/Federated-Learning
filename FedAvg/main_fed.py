@@ -108,6 +108,13 @@ if __name__ == '__main__':
             net_glob = CNNCifar(args=args).cuda()
         else:
             net_glob = CNNCifar(args=args)
+
+    elif args.model == 'cnn' and args.dataset == 'cifar100':
+        if args.gpu != -1:
+            torch.cuda.set_device(args.gpu)
+            net_glob = CNNCifar(args=args).cuda()
+        else:
+            net_glob = CNNCifar(args=args)
     elif args.model == 'cnn' and args.dataset == 'mnist':
         if args.gpu != -1:
             torch.cuda.set_device(args.gpu)
