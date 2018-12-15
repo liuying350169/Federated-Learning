@@ -39,13 +39,14 @@ class LocalUpdate(object):
 
         #error
         total = len(idxs)
-        idxs_train = idxs[0:int(0.7*total)]
-        idxs_val = idxs[int(0.7*total):int(0.8*total)]
-        idxs_test = idxs[int(0.8*total):int(1*total)]
+        np.random.shuffle(idxs)
+        # idxs_train = idxs[0:int(0.7*total)]
+        # idxs_val = idxs[int(0.7*total):int(0.8*total)]
+        # idxs_test = idxs[int(0.8*total):int(1*total)]
 
-        # idxs_train = idxs[:420]
-        # idxs_val = idxs[420:480]
-        # idxs_test = idxs[480:]
+        idxs_train = idxs[:420]
+        idxs_val = idxs[420:480]
+        idxs_test = idxs[480:]
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
         test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
