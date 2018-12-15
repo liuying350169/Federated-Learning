@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from torch import autograd
 from tensorboardX import SummaryWriter
 
-from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid
+from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid, cifar100_iid, cifar100_noniid
 from options import args_parser
 from Update import LocalUpdate
 from FedNets import MLP, CNNMnist, CNNCifar
@@ -85,6 +85,16 @@ if __name__ == '__main__':
             dict_users = cifar_iid(dataset_train, args.num_users)
         else:
             dict_users = cifar_noniid(dataset_train, args.num_users)
+    elif args.dataset == 'cifar100':
+        transform = transforms.Compose(
+            [transforms.ToTensor(),
+             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        dataset_train = datasets.CIFAR10('../data/cifar100', train=True, transform=transform, target_transform=None, download=True)
+        if args.iid:
+            dict_users = cifar100_iid(dataset_train, args.num_users)
+        else:
+            dict_users = cifar100_noniid(dataset_train, args.num_users)
+
     else:
         exit('Error: unrecognized dataset')
     img_size = dataset_train[0][0].shape
