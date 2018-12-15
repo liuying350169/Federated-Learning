@@ -89,7 +89,7 @@ if __name__ == '__main__':
         transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        dataset_train = datasets.CIFAR10('../data/cifar100', train=True, transform=transform, target_transform=None, download=True)
+        dataset_train = datasets.CIFAR100('../data/cifar100', train=True, transform=transform, target_transform=None, download=True)
         if args.iid:
             dict_users = cifar100_iid(dataset_train, args.num_users)
         else:
