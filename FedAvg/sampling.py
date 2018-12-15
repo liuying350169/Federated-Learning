@@ -317,9 +317,11 @@ if __name__ == '__main__':
     dataset_train_cifar100 = datasets.CIFAR100('../data/cifar100', train=True, transform=transform, target_transform=None,
                                      download=True)
 
+
+
     num = 100
     #d = mnist_noniid(dataset_train, num)
     #e = mnist_noniid_extram(dataset_train, num)
-    c100 = cifar100_iid(dataset_train_cifar100,num)
-    c100_noniid = cifar100_noniid(dataset_train_cifar100, num)
+    #c100 = cifar100_iid(dataset_train_cifar100,num)
+    #c100_noniid = cifar100_noniid(dataset_train_cifar100, num)
     print("good")
