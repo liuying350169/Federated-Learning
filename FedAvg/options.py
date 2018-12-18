@@ -27,6 +27,7 @@ def args_parser():
                         help="Whether use max pooling rather than strided convolutions")
 
     # other arguments
+    parser.add_argument('--test', type=int, default='1', help="all testset or non-iid testset")
     parser.add_argument('--dataset', type=str, default='cifar', help="name of dataset")
     parser.add_argument('--iid', type=int, default=0, help='whether i.i.d or not, 1 for iid, 0 for non-iid')
     parser.add_argument('--num_classes', type=int, default=10, help="number of classes")

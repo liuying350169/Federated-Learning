@@ -181,8 +181,8 @@ if __name__ == '__main__':
             f = open('./test.txt', 'a')
             print('\nTrain loss:', loss_avg)
             #print('\nTrain loss:', loss_avg,file=f)
-            print("\niter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,100. * sum(list_acc) / len(list_acc)))
-            print("\niter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,100. * sum(list_acc) / len(list_acc)), file=f)
+            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,100. * sum(list_acc) / len(list_acc)))
+            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,100. * sum(list_acc) / len(list_acc)), file=f)
             f.close()
         loss_train.append(loss_avg)
 
