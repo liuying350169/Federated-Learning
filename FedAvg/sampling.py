@@ -4,6 +4,7 @@
 
 
 import numpy as np
+import datetime
 from torchvision import datasets, transforms
 
 def mnist_iid(dataset, num_users):
@@ -255,7 +256,6 @@ def cifar100_noniid(dataset, num_users):
     #idxs = 60000, 60000 is devide into 200 parts, and 300 images each part
     #idxs = 1-59999
     idxs = np.arange(num_shards*num_imgs)
-    print(idxs)
 
     #labels is dataset's label
     #len is 60000

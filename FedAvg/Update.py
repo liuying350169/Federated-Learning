@@ -50,8 +50,8 @@ class LocalUpdate(object):
         idxs_train = idxs
         # idxs_val = idxs[420:480]
         # idxs_test = idxs[480:]
-        idxs_val = np.arange(6000)
-        idxs_test = np.arange(12000)
+        idxs_val = np.arange(600)
+        idxs_test = np.arange(1200)
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
         test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
