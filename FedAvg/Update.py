@@ -47,7 +47,7 @@ class LocalUpdate(object):
         # idxs_val = idxs[int(0.7*total):int(0.8*total)]
         # idxs_test = idxs[int(0.8*total):int(1*total)]
 
-        idxs_train = idxs
+        idxs_train = idxs[:600]
         # idxs_val = idxs[420:480]
         # idxs_test = idxs[480:]
         idxs_val = np.arange(600)
@@ -55,19 +55,6 @@ class LocalUpdate(object):
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
         test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
-        # if self.args.test == 1 and self.args.dataset == 'mnist':
-        #     #all_test iid testset
-        #     idxs_train = idxs
-        #     self.test_data = datasets.MNIST(root='../data/mnist/', train=False, transform=transforms.Compose([
-        #                                transforms.ToTensor(),
-        #                                transforms.Normalize((0.1307,), (0.3081,))
-        #                            ]))
-        #
-        #     #idxs_val =
-        #
-        #
-        # else:
-        #     exit('Error: only can use mnist test dataset')
 
         return train, val, test
 
