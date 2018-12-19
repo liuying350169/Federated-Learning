@@ -168,11 +168,11 @@ if __name__ == '__main__':
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
             m = args.num_users
-            print("**********m=",m)
+            #print("**********m=",m)
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
         else:
             m = max(int(args.frac * args.num_users), 1)
-            print("**********m=", m)
+            #print("**********m=", m)
             #m is select how many ready client to use， default is 10
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
@@ -181,8 +181,9 @@ if __name__ == '__main__':
         allids = []
         for idx in idxs_users:
             print("user num id",idx)
-            allids.append(idx)
-            print(allids.sort())
+            #allids.append(idx)
+            #allids.sort()
+            print(allids)
             #use LocalUpdate to update weight
             #train_test_validate has [] [] []
             local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[idx], tb=summary)
@@ -220,8 +221,9 @@ if __name__ == '__main__':
         # should be iter % 10 == 0:
         # now is do it every time
         # I want to show acc every iter
+        # it's truly no use
         if args.epochs % 10 == 0:
-            print(args.epochs)
+            #print(args.epochs)
             list_acc, list_loss = [], []
             #model.eval() makes model can be test
             net_glob.eval()

@@ -400,7 +400,9 @@ def cifar100_noniid_extram(dataset, num_users):
         begin = begin+1000
         end = end + 1000
         #print(begin)
-        #print(dict_users[i])
+    # print(dict_users[0])
+    # print(dict_users[0].sort())
+    # print(dict_users[0])
     return dict_users
 
 
