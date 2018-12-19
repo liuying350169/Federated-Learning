@@ -418,8 +418,7 @@ if __name__ == '__main__':
     dataset_train_cifar100 = datasets.CIFAR100('../data/cifar100', train=True, transform=transform, target_transform=None,
                                      download=True)
 
-
-
+    print(datetime.datetime.now())
     num = 100
     #d = mnist_noniid(dataset_train, num)
     #e = mnist_noniid_extram(dataset_train, num)

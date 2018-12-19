@@ -153,60 +153,112 @@ if __name__ == '__main__':
 
     # copy weights
     w_glob = net_glob.state_dict()
+    #net_glob is the global model
+    #state_dict() is the weights of a model
 
     # training
     loss_train = []
+    acc_train = []
     cv_loss, cv_acc = [], []
     val_loss_pre, counter = 0, 0
     net_best = None
     val_acc_list, net_list = [], []
+    #tqdm jin du tiao
     for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
-        if(args.num_users == 5):
-            m = 5
+        if(args.num_users <= 10):
+            m = args.num_users
+            print("**********m=",m)
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
         else:
             m = max(int(args.frac * args.num_users), 1)
+            print("**********m=", m)
             #m is select how many ready client to use， default is 10
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
         #for every select users
+        #idxs_users is some numbers
+        allids = []
         for idx in idxs_users:
+            print("user num id",idx)
+            allids.append(idx)
+            print(allids.sort())
             #use LocalUpdate to update weight
             #train_test_validate has [] [] []
             local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[idx], tb=summary)
+            #LocalUpdate initial
             w, loss = local.update_weights(net=copy.deepcopy(net_glob))
+            #use global to train
+            # w is local model's state_dict(), means the weight of local model
+            # loss is the sum(epoch_loss) / len(epoch_loss)
+
+            #w_locals is [], an empty []
+            #w_locals save the local weight
             w_locals.append(copy.deepcopy(w))
+            #loss_locals is [], an empty []
+            #loss_locals save the loss
             loss_locals.append(copy.deepcopy(loss))
+        #w_locals and loss_locals return all select idxs_users
+
+
         # update global weights
+        # average_weights all w_locals in every epoch
         w_glob = average_weights(w_locals)
+
+        # here can use other ways to average
+
 
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
 
+
         # print loss
+        # calculate avg_loss
         loss_avg = sum(loss_locals) / len(loss_locals)
+
+        # error
+        # should be iter % 10 == 0:
+        # now is do it every time
+        # I want to show acc every iter
         if args.epochs % 10 == 0:
+            print(args.epochs)
             list_acc, list_loss = [], []
+            #model.eval() makes model can be test
             net_glob.eval()
-            for c in tqdm(range(args.num_users)):
-                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[c], tb=summary)
-                acc, loss = net_local.test(net=net_glob)
-                list_acc.append(acc)
-                list_loss.append(loss)
+            #for every user?
+            #for every users is because in before every test is different, but now they are same
+            #so we can use only one to test
+        #   for c in tqdm(range(args.num_users)):
+
+            #test is not according to users, is the same
+            net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[0], tb=summary)
+            acc, loss = net_local.test(net=net_glob)
+            list_acc.append(acc)
+            list_loss.append(loss)
+
+            acc_avg = 100. * sum(list_acc) / len(list_acc)
             f = open('./test.txt', 'a')
             print('\nTrain loss:', loss_avg)
             #print('\nTrain loss:', loss_avg,file=f)
-            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,100. * sum(list_acc) / len(list_acc)))
-            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,100. * sum(list_acc) / len(list_acc)), file=f)
+            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,acc_avg))
+            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,acc_avg), file=f)
             f.close()
         loss_train.append(loss_avg)
+        acc_train.append(acc_avg)
+
 
     # plot loss curve
     plt.figure()
     plt.plot(range(len(loss_train)), loss_train)
     plt.ylabel('train_loss')
-    plt.savefig('../save/fed_{}_{}_{}_C{}_iid{}.png'.format(args.dataset, args.model, args.epochs, args.frac, args.iid))
+    plt.savefig('../save/loss_fed_{}_{}_{}_C{}_iid{}_{}.png'.format(args.dataset, args.model, args.epochs, args.num_users, args.iid, datetime.datetime.now()))
+
+    # plot acc curve
+    plt.figure()
+    plt.plot(range(len(acc_train)), acc_train)
+    plt.ylabel('train_acc')
+    plt.savefig('../save/acc_fed_{}_{}_{}_C{}_iid{}_{}.png'.format(args.dataset, args.model, args.epochs, args.num_users, args.iid, datetime.datetime.now()))
+
 
     # testing
     list_acc, list_loss = [], []

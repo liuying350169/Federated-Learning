@@ -47,6 +47,7 @@ class LocalUpdate(object):
         return train, val, test
 
     def update_weights(self, net):
+
         net.train()
         # train and update
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5)
@@ -92,6 +93,7 @@ class LocalUpdate(object):
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     def test(self, net):
