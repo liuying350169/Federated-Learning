@@ -16,7 +16,7 @@ import torch.nn.functional as F
 from torch import autograd
 from tensorboardX import SummaryWriter
 
-from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid, cifar_noniid_extram, cifar100_iid, cifar100_noniid
+from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid, cifar_noniid_extram, cifar100_iid, cifar100_noniid, cifar100_iid_extram
 from options import args_parser
 from Update import LocalUpdate
 from FedNets import MLP, CNNMnist, CNNCifar
@@ -104,8 +104,10 @@ if __name__ == '__main__':
         dataset_train = datasets.CIFAR100('../data/cifar100', train=True, transform=transform, target_transform=None, download=True)
         dataset_test = datasets.CIFAR100('../data/cifar100', train=False, transform=transform, target_transform=None, download=True)
 
-        if args.iid:
+        if args.iid==1:
             dict_users = cifar100_iid(dataset_train, args.num_users)
+        elif args.iid==2:
+            dict_users = cifar100_iid_extram(dataset_train, args.num_users)
         else:
             dict_users = cifar100_noniid(dataset_train, args.num_users)
 
