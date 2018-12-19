@@ -367,6 +367,47 @@ def cifar100_noniid(dataset, num_users):
     #finally return each user have which 600 images ,every user have a array contain 600 ge number
     return dict_users
 
+def cifar100_noniid_extram(dataset, num_users):
+    """
+    Sample non-I.I.D. client data from CIFAR100 dataset
+    :param dataset:
+    :param num_users:
+    :return: dict of image index
+    """
+    num_users = 100
+    dict_users = {i: np.array([]) for i in range(num_users)}
+    idxs = np.arange(len(dataset))
+    print(idxs)
+
+    labels = dataset.train_labels
+
+    idxs_labels = np.vstack((idxs, labels))
+    print(idxs_labels)
+    #print(idxs_labels)
+
+    #change into arrange depend on the arrange of labels
+    idxs_labels = idxs_labels[:,idxs_labels[1,:].argsort()]
+    print(idxs_labels)
+    #print(idxs_labels)
+
+    #finally the idxs arrange to labels
+    #new ids
+    #[30207  5662 55366 ... 23285 15728 11924]
+    idxs = idxs_labels[0,:]
+    print(idxs)
+    #print(idx_shard)
+    #print(np.random.shuffle(idx_shard))
+    # divide and assign
+    #100 ge users
+    begin = 0
+    end = begin + 500
+    for i in range(num_users):
+        dict_users[i] = idxs[begin:end]
+        begin = begin+500
+        end = end + 500
+        print(begin)
+    return dict_users
+
 
 if __name__ == '__main__':
     dataset_train = datasets.MNIST('./data/mnist/', train=True, download=True,
@@ -387,7 +428,8 @@ if __name__ == '__main__':
     num = 100
     #d = mnist_noniid(dataset_train, num)
     #e = mnist_noniid_extram(dataset_train, num)
-    ee = cifar_noniid_extram(dataset_train_cifar,num)
+    #ee = cifar_noniid_extram(dataset_train_cifar,num)
     #c100 = cifar100_iid(dataset_train_cifar100,num)
     #c100_noniid = cifar100_noniid(dataset_train_cifar100, num)
+    c100_noniid = cifar100_noniid_extram(dataset_train_cifar100, num)
     print("good")
