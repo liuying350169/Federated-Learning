@@ -35,21 +35,12 @@ class LocalUpdate(object):
         self.tb = tb
 
     def train_val_test(self, dataset, testset, idxs):
-        #split train, validation, and test
-        #every user have 600 images 0-420 for train , 420-480 for validation, 480 - 600 for test
-
-        # if self.args.test == 0:
-            #non-iid testset
-            #error
         total = len(idxs)
         np.random.shuffle(idxs)
-        # idxs_train = idxs[0:int(0.7*total)]
-        # idxs_val = idxs[int(0.7*total):int(0.8*total)]
-        # idxs_test = idxs[int(0.8*total):int(1*total)]
+
 
         idxs_train = idxs[:600]
-        # idxs_val = idxs[420:480]
-        # idxs_test = idxs[480:]
+
         idxs_val = np.arange(600)
         idxs_test = np.arange(1200)
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)

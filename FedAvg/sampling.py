@@ -374,11 +374,9 @@ def cifar100_noniid_extram(dataset, num_users):
     :param num_users:
     :return: dict of image index
     """
-    num_users = 100
+    num_users = 50
     dict_users = {i: np.array([]) for i in range(num_users)}
     idxs = np.arange(len(dataset))
-    print(idxs)
-
     labels = dataset.train_labels
 
     idxs_labels = np.vstack((idxs, labels))
@@ -388,11 +386,7 @@ def cifar100_noniid_extram(dataset, num_users):
     #change into arrange depend on the arrange of labels
     idxs_labels = idxs_labels[:,idxs_labels[1,:].argsort()]
     print(idxs_labels)
-    #print(idxs_labels)
 
-    #finally the idxs arrange to labels
-    #new ids
-    #[30207  5662 55366 ... 23285 15728 11924]
     idxs = idxs_labels[0,:]
     print(idxs)
     #print(idx_shard)
@@ -400,12 +394,13 @@ def cifar100_noniid_extram(dataset, num_users):
     # divide and assign
     #100 ge users
     begin = 0
-    end = begin + 500
+    end = begin + 1000
     for i in range(num_users):
         dict_users[i] = idxs[begin:end]
-        begin = begin+500
-        end = end + 500
-        print(begin)
+        begin = begin+1000
+        end = end + 1000
+        #print(begin)
+        #print(dict_users[i])
     return dict_users
 
 
