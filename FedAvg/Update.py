@@ -35,8 +35,7 @@ class LocalUpdate(object):
         self.tb = tb
 
     def train_val_test(self, dataset, testset, idxs):
-        total = len(idxs)
-
+        #total = len(idxs)
         np.random.shuffle(idxs)
         idxs_train = idxs[:600]
         idxs_val = np.arange(3000)
