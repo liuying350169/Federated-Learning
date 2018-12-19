@@ -69,6 +69,11 @@ if __name__ == '__main__':
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
                    ]))
+        dataset_test = datasets.MNIST('../data/mnist/', train=False, download=True,
+                   transform=transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.1307,), (0.3081,))
+                   ]))
         # sample users
         if args.iid == 1:
             dict_users = mnist_iid(dataset_train, args.num_users)
@@ -77,22 +82,28 @@ if __name__ == '__main__':
             dict_users = mnist_noniid_extram(dataset_train, args.num_users)
         else:
             dict_users = mnist_noniid(dataset_train, args.num_users)
+
     elif args.dataset == 'cifar':
         transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         dataset_train = datasets.CIFAR10('../data/cifar', train=True, transform=transform, target_transform=None, download=True)
+        dataset_test = datasets.CIFAR10('../data/cifar', train=False, transform=transform, target_transform=None, download=True)
+
         if args.iid == 1:
             dict_users = cifar_iid(dataset_train, args.num_users)
         elif args.iid == 2:
             dict_users = cifar_noniid_extram(dataset_train, args.num_users)
         else:
             dict_users = cifar_noniid(dataset_train, args.num_users)
+
     elif args.dataset == 'cifar100':
         transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         dataset_train = datasets.CIFAR100('../data/cifar100', train=True, transform=transform, target_transform=None, download=True)
+        dataset_test = datasets.CIFAR100('../data/cifar100', train=False, transform=transform, target_transform=None, download=True)
+
         if args.iid:
             dict_users = cifar100_iid(dataset_train, args.num_users)
         else:
@@ -161,7 +172,7 @@ if __name__ == '__main__':
         for idx in idxs_users:
             #use LocalUpdate to update weight
             #train_test_validate has [] [] []
-            local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx], tb=summary)
+            local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[idx], tb=summary)
             w, loss = local.update_weights(net=copy.deepcopy(net_glob))
             w_locals.append(copy.deepcopy(w))
             loss_locals.append(copy.deepcopy(loss))
@@ -177,7 +188,7 @@ if __name__ == '__main__':
             list_acc, list_loss = [], []
             net_glob.eval()
             for c in tqdm(range(args.num_users)):
-                net_local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[c], tb=summary)
+                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[c], tb=summary)
                 acc, loss = net_local.test(net=net_glob)
                 list_acc.append(acc)
                 list_loss.append(loss)
@@ -199,7 +210,7 @@ if __name__ == '__main__':
     list_acc, list_loss = [], []
     net_glob.eval()
     for c in tqdm(range(args.num_users)):
-        net_local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[c], tb=summary)
+        net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[c], tb=summary)
         acc, loss = net_local.test(net=net_glob)
         list_acc.append(acc)
         list_loss.append(loss)

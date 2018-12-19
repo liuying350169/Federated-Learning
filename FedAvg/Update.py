@@ -27,14 +27,14 @@ class DatasetSplit(Dataset):
         return image, label
 
 class LocalUpdate(object):
-    def __init__(self, args, dataset, idxs, tb):
+    def __init__(self, args, dataset, testset, idxs, tb):
         #idxs is one selected user's imgs list
         self.args = args
         self.loss_func = nn.NLLLoss()
-        self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, list(idxs))
+        self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs))
         self.tb = tb
 
-    def train_val_test(self, dataset, idxs):
+    def train_val_test(self, dataset, testset, idxs):
         #split train, validation, and test
         #every user have 600 images 0-420 for train , 420-480 for validation, 480 - 600 for test
 
@@ -53,8 +53,8 @@ class LocalUpdate(object):
         idxs_val = np.arange(600)
         idxs_test = np.arange(1200)
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
-        val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-        test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+        val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
+        test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
 
         return train, val, test
 
