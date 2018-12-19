@@ -36,17 +36,14 @@ class LocalUpdate(object):
 
     def train_val_test(self, dataset, testset, idxs):
         total = len(idxs)
+
         np.random.shuffle(idxs)
-
-
         idxs_train = idxs[:600]
-
-        idxs_val = np.arange(600)
-        idxs_test = np.arange(1200)
+        idxs_val = np.arange(3000)
+        idxs_test = np.arange(6000)
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
         test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
-
         return train, val, test
 
     def update_weights(self, net):
