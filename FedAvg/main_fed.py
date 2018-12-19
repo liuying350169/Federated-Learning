@@ -164,6 +164,7 @@ if __name__ == '__main__':
     net_best = None
     val_acc_list, net_list = [], []
     #tqdm jin du tiao
+    allids = []
     for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
@@ -178,7 +179,6 @@ if __name__ == '__main__':
 
         #for every select users
         #idxs_users is some numbers
-        allids = []
         for idx in idxs_users:
             print("user num id",idx)
             allids.append(idx)
