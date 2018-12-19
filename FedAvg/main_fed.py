@@ -181,8 +181,8 @@ if __name__ == '__main__':
         allids = []
         for idx in idxs_users:
             print("user num id",idx)
-            #allids.append(idx)
-            #allids.sort()
+            allids.append(idx)
+            allids.sort()
             print(allids)
             #use LocalUpdate to update weight
             #train_test_validate has [] [] []
