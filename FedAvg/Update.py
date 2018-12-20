@@ -7,6 +7,10 @@ from torch import nn, autograd
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
 from sklearn import metrics
+from tensorboardX import SummaryWriter
+from options import args_parser
+from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid, cifar_noniid_extram, cifar100_iid, cifar100_noniid, cifar100_noniid_extram
+
 from torchvision import datasets, transforms
 
 
@@ -61,10 +65,12 @@ class LocalUpdate(object):
     def train_val_test_exchange(self, dataset, testset, idxs, i):
         if(self.args.alltest == 1):
             np.random.shuffle(idxs)
-            idxs_train = []
-            for iter in range(self.args.local_ep):
-                idxs_train = idxs_train + idxs[(i+iter)%self.args.num_users][0:600]
-
+            idxs_train = idxs[(i+0)%self.args.num_users][0:600]
+            for iter in range(1, self.args.local_ep):
+                #print(idxs[(i+iter)%self.args.num_users][0:600])
+                idxs_train = np.append(idxs_train,idxs[(i+iter)%self.args.num_users][0:600])
+            # print(idxs_train)
+            # print(len(idxs_train))
             idxs_val = np.arange(3000)
             idxs_test = np.arange(10000)
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
@@ -159,5 +165,18 @@ class LocalUpdate(object):
         acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
         return  acc, loss.item()
 
-# if __name__ == "__main__":
-#     u = LocalUpdate()
+if __name__ == "__main__":
+    transform = transforms.Compose(
+        [transforms.ToTensor(),
+         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    dataset_train_cifar = datasets.CIFAR10('../data/cifar', train=True, transform=transform, target_transform=None,
+                                     download=True)
+    dataset_test_cifar = datasets.CIFAR10('../data/cifar', train=False, transform=transform, target_transform=None,
+                                     download=True)
+    num = 80
+    c = cifar_noniid(dataset_train_cifar, num)
+
+    summary = SummaryWriter('local')
+
+    args = args_parser()
+    u = LocalUpdate(args=args, dataset=dataset_train_cifar, testset=dataset_test_cifar, idxs=c, i=0, tb=summary)
