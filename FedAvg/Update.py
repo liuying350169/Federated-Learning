@@ -33,6 +33,8 @@ class LocalUpdate(object):
         self.args = args
         self.loss_func = nn.NLLLoss()
         self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
+        self.ldr_train_exchange, self.ldr_val_exchange, self.ldr_test_exchange = self.train_val_test_exchange(dataset, testset, idxs,i)
+
         self.tb = tb
 
     def train_val_test(self, dataset, testset, idxs):
@@ -48,6 +50,31 @@ class LocalUpdate(object):
         elif(self.args.alltest == 0):
             np.random.shuffle(idxs)
             idxs_train = idxs[0:420]
+            idxs_val = idxs[420:480]
+            idxs_test = idxs[480:600]
+            train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
+            val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
+            test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+
+        return train, val, test
+
+    def train_val_test_exchange(self, dataset, testset, idxs, i):
+        if(self.args.alltest == 1):
+            np.random.shuffle(idxs)
+            idxs_train = []
+            for iter in range(self.args.local_ep):
+                idxs_train = idxs_train + idxs[(i+iter)%self.args.num_users][0:600]
+
+            idxs_val = np.arange(3000)
+            idxs_test = np.arange(10000)
+            train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
+            val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
+            test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+        elif(self.args.alltest == 0):
+            np.random.shuffle(idxs)
+            idxs_train = []
+            for iter in range(self.args.local_ep):
+                idxs_train = idxs_train + idxs[(i+iter) % self.args.num_users][0:420]
             idxs_val = idxs[420:480]
             idxs_test = idxs[480:600]
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
@@ -76,30 +103,6 @@ class LocalUpdate(object):
                 optimizer.step()
                 if self.args.gpu != -1:
                     loss = loss.cpu()
-                # if self.args.verbose and batch_idx % 10 == 0:
-                #     #Update Epoch: 3 [300/420 (71%)]	Loss: 0.000724
-                #     #iter,   batch_idx * len(images), len(self.ldr_train.dataset)
-                #     #100. * batch_idx / len(self.ldr_train)
-                #     #loss.item()
-                #     print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                #         iter, batch_idx * len(images), len(self.ldr_train.dataset),
-                #                100. * batch_idx / len(self.ldr_train), loss.item()))
-
-                # if iter%10 == 0:
-                #     # testing
-                #     list_acc, list_loss = [], []
-                #     net_glob.eval()
-                #     for c in tqdm(range(args.num_users)):
-                #         net_local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[c], tb=summary)
-                #         acc, loss = net_local.test(net=net_glob)
-                #         list_acc.append(acc)
-                #         list_loss.append(loss)
-                #
-                #     f = open('./test.txt', 'a')
-                #     print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)))
-                #     print("average acc: {:.2f}%".format(100. * sum(list_acc) / len(list_acc)), file=f)
-                #     f.close()
-
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
@@ -109,11 +112,23 @@ class LocalUpdate(object):
     def exchange_weight(self, net):
         net.train()
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5)
-
         epoch_loss = []
         for iter in range(self.args.local_ep):
             batch_loss = []
-
+            for batch_idx, (images, labels) in enumerate(self.ldr_train_exchange):
+                if self.args.gpu != -1:
+                    images, labels = images.cuda(), labels.cuda()
+                images, labels = autograd.Variable(images), autograd.Variable(labels)
+                net.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs, labels)
+                loss.backward()
+                optimizer.step()
+                if self.args.gpu != -1:
+                    loss = loss.cpu()
+                self.tb.add_scalar('loss', loss.item())
+                batch_loss.append(loss.item())
+            epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
