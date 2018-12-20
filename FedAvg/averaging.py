@@ -15,7 +15,9 @@ def average_weights(w):
         w_avg[k] = torch.div(w_avg[k], len(w))
     return w_avg
 
-#
+# exchange 10 epochs for every
+# now is 5 epoch in one iter
+
 def exchange_weights(w):
     w_avg = copy.deepcopy(w[0])
     for k in w_avg.keys():
