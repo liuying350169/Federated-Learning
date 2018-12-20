@@ -36,10 +36,10 @@ class LocalUpdate(object):
         #idxs change to the all idxs_user and i means which one
         self.args = args
         self.loss_func = nn.NLLLoss()
-        if(self.args.exchange == 0):
-            self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
-        elif(self.args.exchange == 1):
-            self.ldr_train_exchange, self.ldr_val_exchange, self.ldr_test_exchange = self.train_val_test_exchange(dataset, testset, idxs, i)
+        #if(self.args.exchange == 0):
+        self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
+        #if(self.args.exchange == 0):
+        self.ldr_train_exchange, self.ldr_val_exchange, self.ldr_test_exchange = self.train_val_test_exchange(dataset, testset, idxs, i)
 
         self.tb = tb
 
@@ -67,26 +67,26 @@ class LocalUpdate(object):
     def train_val_test_exchange(self, dataset, testset, idxs, i):
         if(self.args.alltest == 1):
             np.random.shuffle(idxs)
-            print(idxs)
-            print(len(idxs))
+            #print(idxs)
+            #print(len(idxs))
             #idxs length is 80 means 80 users
-            idxs_train = idxs[(i+0)%self.args.num_users][0:600]
-            print(idxs_train,len(idxs_train))
-            for iter in range(1, self.args.local_ep):
+            idxs_train = []
+            for iter in range(self.args.local_ep):
                 #print(idxs[(i+iter)%self.args.num_users][0:600])
                 idxs_train = np.append(idxs_train,idxs[(i+iter)%self.args.num_users][0:600])
-            # print(idxs_train)
-            # print(len(idxs_train))
+            print(idxs_train)
+            print(len(idxs_train))
             idxs_val = np.arange(3000)
             idxs_test = np.arange(10000)
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
             val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
             test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+
         elif(self.args.alltest == 0):
             np.random.shuffle(idxs)
-            print(idxs)
-            idxs_train = idxs[(i+0)%self.args.num_users][0:420]
-            for iter in range(1, self.args.local_ep):
+            #print(idxs)
+            idxs_train = []
+            for iter in range(self.args.local_ep):
                 #print(idxs[(i+iter)%self.args.num_users][0:600])
                 idxs_train = np.append(idxs_train,idxs[(i+iter)%self.args.num_users][0:420])
             idxs_val = idxs[420:480]
@@ -188,6 +188,7 @@ if __name__ == "__main__":
     summary = SummaryWriter('local')
 
     args = args_parser()
+    print("args", args.exchange )
 
     m=10
 
