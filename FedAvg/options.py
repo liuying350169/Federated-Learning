@@ -28,7 +28,7 @@ def args_parser():
 
     # other arguments
     parser.add_argument('--alltest', type=int, default=1, help="all testset or non-iid testset")
-    parser.add_argument('--average', type=int, default=1, help="use average or not, not means exchange")
+    parser.add_argument('--exchange', type=int, default=0, help="use exchange or not")
     parser.add_argument('--dataset', type=str, default='cifar', help="name of dataset")
     parser.add_argument('--iid', type=int, default=0, help='whether i.i.d or not, 1 for iid, 0 for non-iid')
     parser.add_argument('--num_classes', type=int, default=10, help="number of classes")

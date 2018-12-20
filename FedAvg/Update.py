@@ -27,11 +27,12 @@ class DatasetSplit(Dataset):
         return image, label
 
 class LocalUpdate(object):
-    def __init__(self, args, dataset, testset, idxs, tb):
+    def __init__(self, args, dataset, testset, idxs, i, tb):
         #idxs is one selected user's imgs list
+        #idxs change to the all idxs_user and i means which one
         self.args = args
         self.loss_func = nn.NLLLoss()
-        self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs))
+        self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
         self.tb = tb
 
     def train_val_test(self, dataset, testset, idxs):
@@ -102,6 +103,17 @@ class LocalUpdate(object):
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
+        return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
+
+    def exchange_weight(self, net):
+        net.train()
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5)
+
+        epoch_loss = []
+        for iter in range(self.args.local_ep):
+            batch_loss = []
+
 
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 

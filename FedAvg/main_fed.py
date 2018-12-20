@@ -182,28 +182,36 @@ if __name__ == '__main__':
 
         #for every select users
         #idxs_users is some numbers
-        for idx in idxs_users:
-            # print("user num id",idx)
-            # allids.append(idx)
-            # allids.sort()
-            # print(allids)
-            #use LocalUpdate to update weight
-            #train_test_validate has [] [] []
-            local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[idx], tb=summary)
-            #LocalUpdate initial
-            w, loss = local.update_weights(net=copy.deepcopy(net_glob))
-            #use global to train
-            # w is local model's state_dict(), means the weight of local model
-            # loss is the sum(epoch_loss) / len(epoch_loss)
+        if(args.exchange == 0):
+            for idx in idxs_users:
+                # print("user num id",idx)
+                # allids.append(idx)
+                # allids.sort()
+                # print(allids)
+                #use LocalUpdate to update weight
+                #train_test_validate has [] [] []
+                local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
+                #LocalUpdate initial
+                w, loss = local.update_weights(net=copy.deepcopy(net_glob))
+                #use global to train
+                # w is local model's state_dict(), means the weight of local model
+                # loss is the sum(epoch_loss) / len(epoch_loss)
 
-            #w_locals is [], an empty []
-            #w_locals save the local weight
-            w_locals.append(copy.deepcopy(w))
-            #loss_locals is [], an empty []
-            #loss_locals save the loss
-            loss_locals.append(copy.deepcopy(loss))
-        #w_locals and loss_locals return all select idxs_users
+                #w_locals is [], an empty []
+                #w_locals save the local weight
+                w_locals.append(copy.deepcopy(w))
+                #loss_locals is [], an empty []
+                #loss_locals save the loss
+                loss_locals.append(copy.deepcopy(loss))
+            #w_locals and loss_locals return all select idxs_users
 
+        elif(args.exchange == 1):
+            for idx in idxs_users:
+                local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
+                                    tb=summary)
+                w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
+                w_locals.append(copy.deepcopy(w))
+                loss_locals.append(copy.deepcopy(loss))
 
         # update global weights
         # average_weights all w_locals in every epoch
@@ -234,14 +242,14 @@ if __name__ == '__main__':
             #for every users is because in before every test is different, but now they are same
             #so we can use only one to test
             if(args.alltest == 1):
-                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[0], tb=summary)
+                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
                 acc, loss = net_local.test(net=net_glob)
                 list_acc.append(acc)
                 list_loss.append(loss)
             elif(args.alltest == 0):
                 for c in range(args.num_users):
                     #test is not according to users, is the same
-                    net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[0], tb=summary)
+                    net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
                     acc, loss = net_local.test(net=net_glob)
                     list_acc.append(acc)
                     list_loss.append(loss)
@@ -273,7 +281,7 @@ if __name__ == '__main__':
     list_acc, list_loss = [], []
     net_glob.eval()
     for c in range(args.num_users):
-        net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[c], tb=summary)
+        net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
         acc, loss = net_local.test(net=net_glob)
         list_acc.append(acc)
         list_loss.append(loss)
