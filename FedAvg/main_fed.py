@@ -207,6 +207,7 @@ if __name__ == '__main__':
 
         elif(args.exchange == 1):
             for idx in idxs_users:
+                print(dict_users.type)
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))

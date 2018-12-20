@@ -72,8 +72,8 @@ class LocalUpdate(object):
             #idxs length is 80 means 80 users
             idxs_train = []
             for iter in range(self.args.local_ep):
-                #print(idxs[(i+iter)%self.args.num_users][0:600])
-                idxs_train = np.append(idxs_train,idxs[(i+iter)%self.args.num_users][0:600])
+                idxs_train = np.append(idxs_train, idxs[(i+iter) % self.args.num_users][0:600])
+
             print(idxs_train)
             print(len(idxs_train))
             idxs_val = np.arange(3000)
