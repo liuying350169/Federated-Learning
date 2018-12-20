@@ -10,7 +10,7 @@ import os
 import copy
 import numpy as np
 from torchvision import datasets, transforms
-from tqdm import tqdm
+#from tqdm import tqdm
 import torch
 import torch.nn.functional as F
 from torch import autograd
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     val_acc_list, net_list = [], []
     #tqdm jin du tiao
     #allids = []
-    for iter in tqdm(range(args.epochs)):
+    for iter in range(args.epochs):
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
             m = args.num_users
@@ -239,7 +239,7 @@ if __name__ == '__main__':
                 list_acc.append(acc)
                 list_loss.append(loss)
             elif(args.alltest == 0):
-                for c in tqdm(range(args.num_users)):
+                for c in range(args.num_users):
                     #test is not according to users, is the same
                     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[0], tb=summary)
                     acc, loss = net_local.test(net=net_glob)
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     # testing
     list_acc, list_loss = [], []
     net_glob.eval()
-    for c in tqdm(range(args.num_users)):
+    for c in range(args.num_users):
         net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users[c], tb=summary)
         acc, loss = net_local.test(net=net_glob)
         list_acc.append(acc)
