@@ -91,10 +91,13 @@ if __name__ == '__main__':
         dataset_test = datasets.CIFAR10('../data/cifar', train=False, transform=transform, target_transform=None, download=True)
 
         if args.iid == 1:
+            print("iid==1")
             dict_users = cifar_iid(dataset_train, args.num_users)
         elif args.iid == 2:
+            print("iid==2")
             dict_users = cifar_noniid_extram(dataset_train, args.num_users)
         else:
+            print("iid==0")
             dict_users = cifar_noniid(dataset_train, args.num_users)
 
     elif args.dataset == 'cifar100':
