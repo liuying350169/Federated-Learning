@@ -155,7 +155,7 @@ def cifar_noniid(dataset, num_users):
     """
     if(num_users >80):
         num_users = 80
-    print(len(dataset))
+    #print(len(dataset))
     num_shards, num_imgs = 160, 300 #48000
     #num_shards is 200, and idx_shard is 0-199
     idx_shard = [i for i in range(num_shards)]
@@ -167,34 +167,34 @@ def cifar_noniid(dataset, num_users):
     #idxs = 60000, 60000 is devide into 200 parts, and 300 images each part
     #idxs = 1-59999
     idxs = np.arange(num_shards*num_imgs)
-    print(idxs)
+    #print(idxs)
 
     #labels is dataset's label
     #len is 60000
     #it is real label
     labels = dataset.train_labels
-    print(len(labels))
+    #print(len(labels))
     labels = labels[0:48000]
-    print(len(labels))
+   # print(len(labels))
 
     # for i in labels:
     #     print(labels[i])
     # sort labels
     #idxs_labels is the match between 0-59999 and the real labels of dataset
     idxs_labels = np.vstack((idxs, labels))
-    print(idxs_labels)
+    #print(idxs_labels)
     #print(idxs_labels)
 
     #change into arrange depend on the arrange of labels
     idxs_labels = idxs_labels[:,idxs_labels[1,:].argsort()]
-    print(idxs_labels)
+    #print(idxs_labels)
     #print(idxs_labels)
 
     #finally the idxs arrange to labels
     #new ids
     #[30207  5662 55366 ... 23285 15728 11924]
     idxs = idxs_labels[0,:]
-    print(idxs)
+    #print(idxs)
     #print(idx_shard)
     #print(np.random.shuffle(idx_shard))
     # divide and assign
@@ -309,7 +309,7 @@ def cifar100_noniid(dataset, num_users):
     """
     if(num_users >80):
         num_users = 80
-    print(len(dataset))
+    #print(len(dataset))
     num_shards, num_imgs = 160, 300 #48000
     #num_shards is 200, and idx_shard is 0-199
     idx_shard = [i for i in range(num_shards)]
@@ -326,28 +326,28 @@ def cifar100_noniid(dataset, num_users):
     #len is 60000
     #it is real label
     labels = dataset.train_labels
-    print(len(labels))
+    #print(len(labels))
     labels = labels[0:48000]
-    print(len(labels))
+    #print(len(labels))
 
     # for i in labels:
     #     print(labels[i])
     # sort labels
     #idxs_labels is the match between 0-59999 and the real labels of dataset
     idxs_labels = np.vstack((idxs, labels))
-    print(idxs_labels)
+    #print(idxs_labels)
     #print(idxs_labels)
 
     #change into arrange depend on the arrange of labels
     idxs_labels = idxs_labels[:,idxs_labels[1,:].argsort()]
-    print(idxs_labels)
+    #print(idxs_labels)
     #print(idxs_labels)
 
     #finally the idxs arrange to labels
     #new ids
     #[30207  5662 55366 ... 23285 15728 11924]
     idxs = idxs_labels[0,:]
-    print(idxs)
+    #print(idxs)
     #print(idx_shard)
     #print(np.random.shuffle(idx_shard))
     # divide and assign

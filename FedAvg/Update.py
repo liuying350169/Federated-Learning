@@ -36,8 +36,10 @@ class LocalUpdate(object):
         #idxs change to the all idxs_user and i means which one
         self.args = args
         self.loss_func = nn.NLLLoss()
-        self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
-        self.ldr_train_exchange, self.ldr_val_exchange, self.ldr_test_exchange = self.train_val_test_exchange(dataset, testset, idxs,i)
+        if(self.args.exchange == 0):
+            self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
+        elif(self.args.exchange == 1):
+            self.ldr_train_exchange, self.ldr_val_exchange, self.ldr_test_exchange = self.train_val_test_exchange(dataset, testset, idxs, i)
 
         self.tb = tb
 
@@ -65,7 +67,11 @@ class LocalUpdate(object):
     def train_val_test_exchange(self, dataset, testset, idxs, i):
         if(self.args.alltest == 1):
             np.random.shuffle(idxs)
+            print(idxs)
+            print(len(idxs))
+            #idxs length is 80 means 80 users
             idxs_train = idxs[(i+0)%self.args.num_users][0:600]
+            print(idxs_train,len(idxs_train))
             for iter in range(1, self.args.local_ep):
                 #print(idxs[(i+iter)%self.args.num_users][0:600])
                 idxs_train = np.append(idxs_train,idxs[(i+iter)%self.args.num_users][0:600])
@@ -78,6 +84,7 @@ class LocalUpdate(object):
             test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
         elif(self.args.alltest == 0):
             np.random.shuffle(idxs)
+            print(idxs)
             idxs_train = idxs[(i+0)%self.args.num_users][0:420]
             for iter in range(1, self.args.local_ep):
                 #print(idxs[(i+iter)%self.args.num_users][0:600])
@@ -175,9 +182,17 @@ if __name__ == "__main__":
     dataset_test_cifar = datasets.CIFAR10('../data/cifar', train=False, transform=transform, target_transform=None,
                                      download=True)
     num = 80
+
     c = cifar_noniid(dataset_train_cifar, num)
 
     summary = SummaryWriter('local')
 
     args = args_parser()
+
+    m=10
+
+    #idxs_users = np.random.choice(range(args.num_users), m, replace=False)
+
     u = LocalUpdate(args=args, dataset=dataset_train_cifar, testset=dataset_test_cifar, idxs=c, i=0, tb=summary)
+
+    print("good")
