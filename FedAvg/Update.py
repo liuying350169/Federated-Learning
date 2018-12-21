@@ -56,7 +56,7 @@ class LocalUpdate(object):
             #print(idxs_test)
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
             val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-            test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+            test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/1000), shuffle=True)
             # for batch_idx, (images, labels) in enumerate(test):
             #     print(batch_idx)
             #     print(labels)
@@ -174,6 +174,9 @@ class LocalUpdate(object):
         f_prob = open('./probs.txt', 'a')
         print("new round###self.i:{}".format(self.i), file=f_prob)
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
+            #after dataloader ldr_test there are three parts in ldr_test
+            #batch_idx is the no. of which batch
+            #(images, labels) are the pair of a sample
             if self.args.gpu != -1:
                 images, labels = images.cuda(), labels.cuda()
 
