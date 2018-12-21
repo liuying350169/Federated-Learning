@@ -15,9 +15,14 @@ def mnist_iid(dataset, num_users):
     :return: dict of image index
     """
     num_items = int(len(dataset)/num_users)
+    # divide into same pieces
     dict_users, all_idxs = {}, [i for i in range(len(dataset))]
+    # all_idxs is all idxs
     for i in range(num_users):
+        #for every user
         dict_users[i] = set(np.random.choice(all_idxs, num_items, replace=False))
+        #from all_idxs random choice num_item ge id
+        #set calculation
         all_idxs = list(set(all_idxs) - dict_users[i])
     return dict_users
 

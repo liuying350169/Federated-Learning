@@ -106,11 +106,9 @@ class LocalUpdate(object):
     #     return train, val, test
 
     def update_weights(self, net):
-
         net.train()
         # train and update
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5)
-
         epoch_loss = []
         for iter in range(self.args.local_ep):
             batch_loss = []
@@ -129,6 +127,7 @@ class LocalUpdate(object):
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
 
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
@@ -173,16 +172,20 @@ class LocalUpdate(object):
         #         loss.backward()
         #         optimizer.step()
 
+        f_prob = open('./probs.txt', 'a')
+        print("new round###self.i:{}".format(self.i), file=f_prob)
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             if self.args.gpu != -1:
                 images, labels = images.cuda(), labels.cuda()
             images, labels = autograd.Variable(images), autograd.Variable(labels)
             log_probs = net(images)
+            print("batch_idx:{}|log_prob:{}|labels:{}|{}".format(batch_idx,log_probs,labels,log_probs==labels), file=f_prob)
             loss = self.loss_func(log_probs, labels)
         if self.args.gpu != -1:
             loss = loss.cpu()
             log_probs = log_probs.cpu()
             labels = labels.cpu()
+        f_prob.close()
         y_pred = np.argmax(log_probs.data, axis=1)
         acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
         return  acc, loss.item()
@@ -198,8 +201,7 @@ if __name__ == "__main__":
     num = 80
 
     c = cifar_iid(dataset_train_cifar, num)
-    #print(c[0][0:600])
-    #print(c.type)
+
     summary = SummaryWriter('local')
 
     args = args_parser()
