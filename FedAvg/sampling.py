@@ -91,7 +91,7 @@ def mnist_noniid_extram(dataset, num_users):
     :param num_users:
     :return:
     """
-    num_users =5
+    num_users = 5
     #finally divide into 5
     #num_shards, num_imgs = 200, 300
     # num_shards is 200, and idx_shard is 0-199
