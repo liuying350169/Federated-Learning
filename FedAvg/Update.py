@@ -41,7 +41,6 @@ class LocalUpdate(object):
         self.idxs = idxs
         self.i = i
         self.tb = tb
-        #if(self.args.exchange == 0):
         self.ldr_train, self.ldr_val, self.ldr_test = self.train_val_test(dataset, testset, list(idxs[i]))
 
 
@@ -49,13 +48,19 @@ class LocalUpdate(object):
         #total = len(idxs)
         if(self.args.alltest == 1):
             np.random.shuffle(idxs)
-            idxs_train = idxs[:600]
+            idxs_train = idxs[0:600]
+            #print(idxs_train)
             idxs_val = np.arange(3000)
+            #print(idxs_val)
             idxs_test = np.arange(10000)
+            #print(idxs_test)
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
             val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
             test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
-        elif(self.args.alltest == 0):
+            # for batch_idx, (images, labels) in enumerate(test):
+            #     print(batch_idx)
+            #     print(labels)
+        if(self.args.alltest == 0):
             np.random.shuffle(idxs)
             idxs_train = idxs[0:420]
             idxs_val = idxs[420:480]
@@ -63,6 +68,9 @@ class LocalUpdate(object):
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
             val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
             test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+            # for batch_idx, (images, labels) in enumerate(test):
+            #     print(batch_idx)
+            #     print(labels)
         return train, val, test
 
     # def train_val_test_exchange(self, dataset, testset, idxs, i):
@@ -106,6 +114,7 @@ class LocalUpdate(object):
         epoch_loss = []
         for iter in range(self.args.local_ep):
             batch_loss = []
+            #enumerate is meijv, means for everyone
             for batch_idx, (images, labels) in enumerate(self.ldr_train):
                 if self.args.gpu != -1:
                     images, labels = images.cuda(), labels.cuda()
@@ -188,18 +197,19 @@ if __name__ == "__main__":
                                      download=True)
     num = 80
 
-    c = cifar_noniid(dataset_train_cifar, num)
-    print(c[0][0:600])
+    c = cifar_iid(dataset_train_cifar, num)
+    #print(c[0][0:600])
     #print(c.type)
     summary = SummaryWriter('local')
 
     args = args_parser()
     print("args", args.exchange )
 
-    m=10
+    m = 10
 
     #idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
     u = LocalUpdate(args=args, dataset=dataset_train_cifar, testset=dataset_test_cifar, idxs=c, i=0, tb=summary)
+
 
     print("good")
