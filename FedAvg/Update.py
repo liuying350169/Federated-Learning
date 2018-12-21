@@ -171,8 +171,8 @@ class LocalUpdate(object):
         #         loss = self.loss_func(log_probs, labels)
         #         loss.backward()
         #         optimizer.step()
-        f_prob = open('./probs.txt', 'a')
-        print("new round###self.i:{}".format(self.i), file=f_prob)
+        #f_prob = open('./probs.txt', 'a')
+        #print("new round###self.i:{}".format(self.i), file=f_prob)
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             #after dataloader ldr_test there are three parts in ldr_test
             #batch_idx is the no. of which batch
@@ -182,13 +182,13 @@ class LocalUpdate(object):
 
             images, labels = autograd.Variable(images), autograd.Variable(labels)
             log_probs = net(images)
-            print("batch_idx:{}|\nlog_prob:{}|\nlabels:{}".format(batch_idx, log_probs, labels,), file=f_prob)
+            #print("batch_idx:{}|\nlog_prob:{}|\nlabels:{}".format(batch_idx, log_probs, labels,), file=f_prob)
             loss = self.loss_func(log_probs, labels)
         if self.args.gpu != -1:
             loss = loss.cpu()
             log_probs = log_probs.cpu()
             labels = labels.cpu()
-        f_prob.close()
+        #f_prob.close()
         y_pred = np.argmax(log_probs.data, axis=1)
         acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
         return  acc, loss.item()
