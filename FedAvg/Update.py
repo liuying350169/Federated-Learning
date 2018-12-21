@@ -182,7 +182,7 @@ class LocalUpdate(object):
 
             images, labels = autograd.Variable(images), autograd.Variable(labels)
             log_probs = net(images)
-            print("batch_idx:{}|log_prob:{}|labels:{}".format(batch_idx, log_probs, labels,), file=f_prob)
+            print("batch_idx:{}|\nlog_prob:{}|\nlabels:{}".format(batch_idx, log_probs, labels,), file=f_prob)
             loss = self.loss_func(log_probs, labels)
         if self.args.gpu != -1:
             loss = loss.cpu()
