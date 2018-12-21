@@ -63,7 +63,6 @@ class LocalUpdate(object):
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
             val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
             test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
-
         return train, val, test
 
     # def train_val_test_exchange(self, dataset, testset, idxs, i):
@@ -136,21 +135,21 @@ class LocalUpdate(object):
             #we should change the trainset every time
             i = (self.i + iter) % self.args.num_users
             ldr_train, ldr_val, ldr_test = self.train_val_test(self.dataset, self.testset, list(idxs[i]))
-            for batch_idx, (images, labels) in enumerate(ldr_train):
-                if self.args.gpu != -1:
-                    images, labels = images.cuda(), labels.cuda()
-                images, labels = autograd.Variable(images), autograd.Variable(labels)
-                net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs, labels)
-                loss.backward()
-                optimizer.step()
-                if self.args.gpu != -1:
-                    loss = loss.cpu()
-                self.tb.add_scalar('loss', loss.item())
-                batch_loss.append(loss.item())
+            for iter in range(5):
+                for batch_idx, (images, labels) in enumerate(ldr_train):
+                    if self.args.gpu != -1:
+                        images, labels = images.cuda(), labels.cuda()
+                    images, labels = autograd.Variable(images), autograd.Variable(labels)
+                    net.zero_grad()
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs, labels)
+                    loss.backward()
+                    optimizer.step()
+                    if self.args.gpu != -1:
+                        loss = loss.cpu()
+                    self.tb.add_scalar('loss', loss.item())
+                    batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
-
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     def test(self, net):
