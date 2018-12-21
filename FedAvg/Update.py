@@ -171,15 +171,15 @@ class LocalUpdate(object):
         #         loss = self.loss_func(log_probs, labels)
         #         loss.backward()
         #         optimizer.step()
-
         f_prob = open('./probs.txt', 'a')
         print("new round###self.i:{}".format(self.i), file=f_prob)
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             if self.args.gpu != -1:
                 images, labels = images.cuda(), labels.cuda()
+
             images, labels = autograd.Variable(images), autograd.Variable(labels)
             log_probs = net(images)
-            print("batch_idx:{}|log_prob:{}|labels:{}|{}".format(batch_idx,log_probs,labels,log_probs==labels), file=f_prob)
+            print("batch_idx:{}|log_prob:{}|labels:{}".format(batch_idx, log_probs, labels,), file=f_prob)
             loss = self.loss_func(log_probs, labels)
         if self.args.gpu != -1:
             loss = loss.cpu()
@@ -212,6 +212,5 @@ if __name__ == "__main__":
     #idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
     u = LocalUpdate(args=args, dataset=dataset_train_cifar, testset=dataset_test_cifar, idxs=c, i=0, tb=summary)
-
 
     print("good")
