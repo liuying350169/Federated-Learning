@@ -56,7 +56,7 @@ class LocalUpdate(object):
             #print(idxs_test)
             train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
             val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-            test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/1000), shuffle=True)
+            test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/100), shuffle=True)
             # for batch_idx, (images, labels) in enumerate(test):
             #     print(batch_idx)
             #     print(labels)
