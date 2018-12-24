@@ -171,8 +171,8 @@ class LocalUpdate(object):
         #         loss = self.loss_func(log_probs, labels)
         #         loss.backward()
         #         optimizer.step()
-        #f_prob = open('./probs.txt', 'a')
-        #print("new round###self.i:{}".format(self.i), file=f_prob)
+        # f_prob = open('./probs.txt', 'a')
+        # print("new round###self.i:{}".format(self.i), file=f_prob)
         list_acc, list_loss = [], []
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             #after dataloader ldr_test there are three parts in ldr_test
