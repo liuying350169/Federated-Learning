@@ -159,13 +159,14 @@ class LocalUpdate(object):
                 log_probs = log_probs.cpu()
                 labels = labels.cpu()
             #calcu acc and loss for every batch
-            f_prob.close()
             y_pred = np.argmax(log_probs.data, axis=1)
             print("batch_idx:{}|\ny_pred:{}|\nlabels:{}".format(batch_idx, y_pred, labels, ), file=f_prob)
+
             acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
             loss = loss.item()
             list_acc.append(acc)
             list_loss.append(loss)
+        f_prob.close()
         avg_acc = sum(list_acc)/len(list_acc)
         avg_loss = sum(list_loss)/len(list_loss)
         return  avg_acc, avg_loss
