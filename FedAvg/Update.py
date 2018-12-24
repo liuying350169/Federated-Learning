@@ -173,6 +173,7 @@ class LocalUpdate(object):
         #         optimizer.step()
         #f_prob = open('./probs.txt', 'a')
         #print("new round###self.i:{}".format(self.i), file=f_prob)
+        list_acc, list_loss = [], []
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             #after dataloader ldr_test there are three parts in ldr_test
             #batch_idx is the no. of which batch
@@ -184,14 +185,21 @@ class LocalUpdate(object):
             log_probs = net(images)
             #print("batch_idx:{}|\nlog_prob:{}|\nlabels:{}".format(batch_idx, log_probs, labels,), file=f_prob)
             loss = self.loss_func(log_probs, labels)
-        if self.args.gpu != -1:
-            loss = loss.cpu()
-            log_probs = log_probs.cpu()
-            labels = labels.cpu()
-        #f_prob.close()
-        y_pred = np.argmax(log_probs.data, axis=1)
-        acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
-        return  acc, loss.item()
+            #calcu the loss
+            if self.args.gpu != -1:
+                loss = loss.cpu()
+                log_probs = log_probs.cpu()
+                labels = labels.cpu()
+            #calcu acc and loss for every batch
+            #f_prob.close()
+            y_pred = np.argmax(log_probs.data, axis=1)
+            acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
+            loss = loss.item()
+            list_acc.append(acc)
+            list_loss.append(loss)
+            avg_acc = sum(list_acc)/len(list_acc)
+            avg_loss = sum(list_loss)/len(list_loss)
+        return  avg_acc, avg_loss
 
 if __name__ == "__main__":
     transform = transforms.Compose(
