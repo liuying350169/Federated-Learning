@@ -244,8 +244,8 @@ if __name__ == '__main__':
             if(args.alltest == 1):
                 net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
                 acc, loss = net_local.test(net=net_glob)
-                list_acc.append(acc)
-                list_loss.append(loss)
+                acc_avg = acc
+                loss_avg = loss
             elif(args.alltest == 0):
                 for c in range(args.num_users):
                     #test is not according to users, is the same
@@ -253,7 +253,7 @@ if __name__ == '__main__':
                     acc, loss = net_local.test(net=net_glob)
                     list_acc.append(acc)
                     list_loss.append(loss)
-            acc_avg = 100. * sum(list_acc) / len(list_acc)
+                acc_avg = 100. * sum(list_acc) / len(list_acc)
             f = open('./test.txt', 'a')
             print('\nTrain loss:', loss_avg)
             #print('\nTrain loss:', loss_avg,file=f)

@@ -167,7 +167,7 @@ class LocalUpdate(object):
             list_loss.append(loss)
 
         avg_acc = sum(list_acc)/len(list_acc)
-        avg_loss = sum(list_loss)/len(list_loss)
+        avg_loss = loss
         print("####avgacc:{}".format(avg_acc))
         f_prob.close()
         return  avg_acc, avg_loss
