@@ -23,30 +23,30 @@ from FedNets import MLP, CNNMnist, CNNCifar
 from averaging import average_weights
 
 
-def test(net_g, data_loader, args):
-    # testing
-    test_loss = 0
-    correct = 0
-    l = len(data_loader)
-    for idx, (data, target) in enumerate(data_loader):
-        if args.gpu != -1:
-            data, target = data.cuda(), target.cuda()
-        data, target = autograd.Variable(data), autograd.Variable(target)
-        log_probs = net_g(data)
-        test_loss += F.nll_loss(log_probs, target, size_average=False).item() # sum up batch loss
-        y_pred = log_probs.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-        correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
-
-    test_loss /= len(data_loader.dataset)
-    f = open('./test.txt', 'a')
-    print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
-        test_loss, correct, len(data_loader.dataset),
-        100. * correct / len(data_loader.dataset)),file=f)
-    print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
-        test_loss, correct, len(data_loader.dataset),
-        100. * correct / len(data_loader.dataset)))
-    f.close()
-    return correct, test_loss
+# def test(net_g, data_loader, args):
+#     # testing
+#     test_loss = 0
+#     correct = 0
+#     l = len(data_loader)
+#     for idx, (data, target) in enumerate(data_loader):
+#         if args.gpu != -1:
+#             data, target = data.cuda(), target.cuda()
+#         data, target = autograd.Variable(data), autograd.Variable(target)
+#         log_probs = net_g(data)
+#         test_loss += F.nll_loss(log_probs, target, size_average=False).item() # sum up batch loss
+#         y_pred = log_probs.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+#         correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
+#
+#     test_loss /= len(data_loader.dataset)
+#     f = open('./test.txt', 'a')
+#     print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
+#         test_loss, correct, len(data_loader.dataset),
+#         100. * correct / len(data_loader.dataset)),file=f)
+#     print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
+#         test_loss, correct, len(data_loader.dataset),
+#         100. * correct / len(data_loader.dataset)))
+#     f.close()
+#     return correct, test_loss
 
 
 if __name__ == '__main__':
@@ -245,7 +245,7 @@ if __name__ == '__main__':
                 net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
                 acc, loss = net_local.test(net=net_glob)
                 acc_avg = acc
-                loss_avg = loss
+                #loss_avg = loss
             elif(args.alltest == 0):
                 for c in range(args.num_users):
                     #test is not according to users, is the same
@@ -257,8 +257,8 @@ if __name__ == '__main__':
             f = open('./test.txt', 'a')
             print('\nTrain loss:', loss_avg)
             #print('\nTrain loss:', loss_avg,file=f)
-            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,acc_avg))
-            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter,loss_avg,acc_avg), file=f)
+            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg))
+            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg), file=f)
             f.close()
         loss_train.append(loss_avg)
         acc_train.append(acc_avg)
