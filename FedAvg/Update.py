@@ -46,34 +46,35 @@ class LocalUpdate(object):
 
     def train_val_test(self, dataset, testset, idxs):
         #total = len(idxs)
-        if(self.args.alltest == 1):
-            np.random.shuffle(idxs)
-            idxs_train = idxs[0:600]
-            #print(idxs_train)
-            idxs_val = np.arange(3000)
-            #print(idxs_val)
-            idxs_test = np.arange(10000)
-            #print(idxs_test)
-            train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
-            val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-            test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/1000), shuffle=True)
-            # for batch_idx, (images, labels) in enumerate(test):
-            #     print(batch_idx)
-            #     print(labels)
-        if(self.args.alltest == 0):
-            np.random.shuffle(idxs)
-            total = np.arange(10000)
-            np.random.shuffle(total)
-            idxs_train = idxs[0:420]
-            idxs_val = idxs[420:480]
+        # if(self.args.alltest == 1):
+        #     np.random.shuffle(idxs)
+        #     idxs_train = idxs[0:600]
+        #     #print(idxs_train)
+        #     idxs_val = np.arange(3000)
+        #     #print(idxs_val)
+        #     idxs_test = np.arange(10000)
+        #     #print(idxs_test)
+        #     train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
+        #     val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
+        #     test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/1000), shuffle=True)
+        #     # for batch_idx, (images, labels) in enumerate(test):
+        #     #     print(batch_idx)
+        #     #     print(labels)
+        # if(self.args.alltest == 0):
+        np.random.shuffle(idxs)
+        #total = np.arange(10000)
+        #np.random.shuffle(total)
+        idxs_train = idxs[0:420]
+        idxs_val = idxs[420:480]
 
-            idxs_test = idxs[480:600]
-            #print(idxs_test)
-            # idxs_test1 = list(total[120*self.i:120*(self.i+1)])
-            # print(idxs_test1)
-            train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
-            val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-            test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+        idxs_test = idxs[480:600]
+        #print(idxs_test)
+        # idxs_test1 = list(total[120*self.i:120*(self.i+1)])
+        # print(idxs_test1)
+        train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
+        val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
+        test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+
         return train, val, test
 
 
