@@ -241,33 +241,33 @@ if __name__ == '__main__':
         # now is do it every time
         # I want to show acc every iter
         # it's truly no use
-        if args.epochs % 10 == 0:
-            #print(args.epochs)
-            list_acc, list_loss = [], []
-            #model.eval() makes model can be test
-            net_glob.eval()
-            #for every user?
-            #for every users is because in before every test is different, but now they are same
-            #so we can use only one to test
-            # if(args.alltest == 1):
-            #     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
-            #     acc, loss = net_local.test(net=net_glob)
-            #     acc_avg = acc
-            #     #loss_avg = loss
-            #elif(args.alltest == 0):
-            for c in range(args.num_users):
-                #test is not according to users, is the same
-                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
-                acc, loss = net_local.test(net=net_glob)
-                list_acc.append(acc)
-                list_loss.append(loss)
-            acc_avg = 100. * sum(list_acc) / len(list_acc)
-            f = open('./test.txt', 'a')
-            print('\nTrain loss:', loss_avg)
-            #print('\nTrain loss:', loss_avg,file=f)
-            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg))
-            print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg), file=f)
-            f.close()
+        #if args.epochs % 10 == 0:
+        #print(args.epochs)
+        list_acc, list_loss = [], []
+        #model.eval() makes model can be test
+        net_glob.eval()
+        #for every user?
+        #for every users is because in before every test is different, but now they are same
+        #so we can use only one to test
+        # if(args.alltest == 1):
+        #     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
+        #     acc, loss = net_local.test(net=net_glob)
+        #     acc_avg = acc
+        #     #loss_avg = loss
+        #elif(args.alltest == 0):
+        for c in range(args.num_users):
+            #test is not according to users, is the same
+            net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
+            acc, loss = net_local.test(net=net_glob)
+            list_acc.append(acc)
+            list_loss.append(loss)
+        acc_avg = 100. * sum(list_acc) / len(list_acc)
+        f = open('./test.txt', 'a')
+        print('\nTrain loss:', loss_avg)
+        #print('\nTrain loss:', loss_avg,file=f)
+        print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg))
+        print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg), file=f)
+        f.close()
         loss_train.append(loss_avg)
         acc_train.append(acc_avg)
 
