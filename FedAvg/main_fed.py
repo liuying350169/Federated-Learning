@@ -213,12 +213,20 @@ if __name__ == '__main__':
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
 
+        #liuyyyy
+        elif(args.exchange == 2):
+            for idx in idxs_users:
+                local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
+                                    tb=summary)
+                w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
+                w_locals.append(copy.deepcopy(w))
+                loss_locals.append(copy.deepcopy(loss))
+
         # update global weights
         # average_weights all w_locals in every epoch
         w_glob = average_weights(w_locals)
 
         # here can use other ways to average
-
 
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
@@ -241,19 +249,19 @@ if __name__ == '__main__':
             #for every user?
             #for every users is because in before every test is different, but now they are same
             #so we can use only one to test
-            if(args.alltest == 1):
-                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
+            # if(args.alltest == 1):
+            #     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
+            #     acc, loss = net_local.test(net=net_glob)
+            #     acc_avg = acc
+            #     #loss_avg = loss
+            #elif(args.alltest == 0):
+            for c in range(args.num_users):
+                #test is not according to users, is the same
+                net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
                 acc, loss = net_local.test(net=net_glob)
-                acc_avg = acc
-                #loss_avg = loss
-            elif(args.alltest == 0):
-                for c in range(args.num_users):
-                    #test is not according to users, is the same
-                    net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
-                    acc, loss = net_local.test(net=net_glob)
-                    list_acc.append(acc)
-                    list_loss.append(loss)
-                acc_avg = 100. * sum(list_acc) / len(list_acc)
+                list_acc.append(acc)
+                list_loss.append(loss)
+            acc_avg = 100. * sum(list_acc) / len(list_acc)
             f = open('./test.txt', 'a')
             print('\nTrain loss:', loss_avg)
             #print('\nTrain loss:', loss_avg,file=f)
