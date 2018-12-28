@@ -236,7 +236,7 @@ if __name__ == '__main__':
         # if(args.alltest == 1):
         net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
         acc, loss = net_local.test(net=net_glob)
-        acc_avg = acc
+        #acc_avg = acc
             #loss_avg = loss
         # elif(args.alltest == 0):
         # for c in range(args.num_users):
