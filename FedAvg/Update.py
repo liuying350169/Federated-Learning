@@ -62,9 +62,17 @@ class LocalUpdate(object):
         #     #     print(labels)
         # if(self.args.alltest == 0):
 
-        idxs_train = idxs[0:480]
-        idxs_val = idxs[420:480]
-        idxs_test = idxs[480:600]
+        if(self.args.iid == 2):
+            idxs_test = idxs[0:120]
+            idxs = idxs[120:]
+            np.random.shuffle(idxs)
+            idxs_train = idxs[0:480]
+        else:
+            idxs_train = idxs[0:480]
+            idxs_val = idxs[420:480]
+
+            idxs_test = idxs[480:600]
+
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
         test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
