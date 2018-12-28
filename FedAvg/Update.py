@@ -66,6 +66,7 @@ class LocalUpdate(object):
             idxs_test = idxs[0:120]
             idxs = idxs[120:]
             np.random.shuffle(idxs)
+            idxs_val = idxs[420:480]
             idxs_train = idxs[0:480]
         else:
             idxs_train = idxs[0:480]
