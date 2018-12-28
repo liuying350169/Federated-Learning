@@ -21,6 +21,7 @@ from options import args_parser
 from Update import LocalUpdate
 from FedNets import MLP, CNNMnist, CNNCifar
 from averaging import average_weights
+from FedNets import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 
 
 # def test(net_g, data_loader, args):
@@ -125,7 +126,12 @@ if __name__ == '__main__':
             net_glob = CNNCifar(args=args).cuda()
         else:
             net_glob = CNNCifar(args=args)
-
+    elif args.model == 'resnet18' and args.dataset == 'cifar':
+        if args.gpu != -1:
+            torch.cuda.set_device(args.gpu)
+            net_glob = ResNet18().cuda()
+        else:
+            net_glob = ResNet18()
     elif args.model == 'cnn' and args.dataset == 'cifar100':
         if args.gpu != -1:
             torch.cuda.set_device(args.gpu)
@@ -147,6 +153,7 @@ if __name__ == '__main__':
             net_glob = MLP(dim_in=len_in, dim_hidden=64, dim_out=args.num_classes).cuda()
         else:
             net_glob = MLP(dim_in=len_in, dim_hidden=64, dim_out=args.num_classes)
+
     else:
         exit('Error: unrecognized model')
     print(net_glob)
@@ -204,15 +211,6 @@ if __name__ == '__main__':
             #w_locals and loss_locals return all select idxs_users
 
         elif(args.exchange == 1):
-            for idx in idxs_users:
-                local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
-                                    tb=summary)
-                w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
-                w_locals.append(copy.deepcopy(w))
-                loss_locals.append(copy.deepcopy(loss))
-
-        #liuyyyy
-        elif(args.exchange == 2):
             for idx in idxs_users:
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
