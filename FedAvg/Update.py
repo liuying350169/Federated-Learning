@@ -35,7 +35,7 @@ class LocalUpdate(object):
         #idxs is one selected user's imgs list
         #idxs change to the all idxs_user and i means which one
         self.args = args
-        self.loss_func = nn.NLLLoss()
+        self.loss_func = nn.CrossEntropyLoss()
         self.dataset = dataset
         self.testset = testset
         self.idxs = idxs
@@ -45,22 +45,6 @@ class LocalUpdate(object):
 
 
     def train_val_test(self, dataset, testset, idxs):
-        #total = len(idxs)
-        # if(self.args.alltest == 1):
-        #     np.random.shuffle(idxs)
-        #     idxs_train = idxs[0:600]
-        #     #print(idxs_train)
-        #     idxs_val = np.arange(3000)
-        #     #print(idxs_val)
-        #     idxs_test = np.arange(10000)
-        #     #print(idxs_test)
-        #     train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
-        #     val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-        #     test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/1000), shuffle=True)
-        #     # for batch_idx, (images, labels) in enumerate(test):
-        #     #     print(batch_idx)
-        #     #     print(labels)
-        # if(self.args.alltest == 0):
 
         if(self.args.iid == 2):
             idxs_test = idxs[0:120]
