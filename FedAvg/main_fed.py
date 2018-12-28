@@ -22,6 +22,7 @@ from Update import LocalUpdate
 from FedNets import MLP, CNNMnist, CNNCifar
 from averaging import average_weights
 from FedNets import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
+from FedNets import VGG
 
 
 # def test(net_g, data_loader, args):
@@ -132,6 +133,13 @@ if __name__ == '__main__':
             net_glob = ResNet18().cuda()
         else:
             net_glob = ResNet18()
+
+    elif args.model == 'vgg16' and args.dataset == 'cifar':
+        if args.gpu != -1:
+            torch.cuda.set_device(args.gpu)
+            net_glob = VGG('VGG16').cuda()
+        else:
+            net_glob = VGG('VGG16')
     elif args.model == 'cnn' and args.dataset == 'cifar100':
         if args.gpu != -1:
             torch.cuda.set_device(args.gpu)

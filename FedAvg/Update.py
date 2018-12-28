@@ -35,6 +35,9 @@ class LocalUpdate(object):
         #idxs is one selected user's imgs list
         #idxs change to the all idxs_user and i means which one
         self.args = args
+        #loss func is CrossEntropyLoss or NLLoss
+        #CrossEntropyLoss is used in non-softmax
+        #NLLoss is used in softmax
         self.loss_func = nn.CrossEntropyLoss()
         self.dataset = dataset
         self.testset = testset
