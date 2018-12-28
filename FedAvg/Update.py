@@ -62,7 +62,7 @@ class LocalUpdate(object):
         #     #     print(labels)
         # if(self.args.alltest == 0):
 
-        idxs_train = idxs[0:420]
+        idxs_train = idxs[0:480]
         idxs_val = idxs[420:480]
         idxs_test = idxs[480:600]
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
