@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     #write args to file
     f = open('./test.txt', 'a')
-    print(args,file=f)
+    print(args, file=f)
     f.close()
     # define paths
     path_project = os.path.abspath('..')
@@ -91,13 +91,13 @@ if __name__ == '__main__':
         dataset_test = datasets.CIFAR10('../data/cifar', train=False, transform=transform, target_transform=None, download=True)
 
         if args.iid == 1:
-            print("iid==1")
+            #print("iid==1")
             dict_users = cifar_iid(dataset_train, args.num_users)
         elif args.iid == 2:
-            print("iid==2")
+            #print("iid==2")
             dict_users = cifar_noniid_extram(dataset_train, args.num_users)
         else:
-            print("iid==0")
+            #print("iid==0")
             dict_users = cifar_noniid(dataset_train, args.num_users)
 
     elif args.dataset == 'cifar100':
@@ -117,8 +117,6 @@ if __name__ == '__main__':
     else:
         exit('Error: unrecognized dataset')
     img_size = dataset_train[0][0].shape
-
-
 
     # build model
     if args.model == 'cnn' and args.dataset == 'cifar':
@@ -257,6 +255,7 @@ if __name__ == '__main__':
         #elif(args.alltest == 0):
         for c in range(args.num_users):
             #test is not according to users, is the same
+            #test in all 180*80 samples
             net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
             acc, loss = net_local.test(net=net_glob)
             list_acc.append(acc)

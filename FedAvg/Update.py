@@ -61,7 +61,7 @@ class LocalUpdate(object):
         #     #     print(batch_idx)
         #     #     print(labels)
         # if(self.args.alltest == 0):
-        np.random.shuffle(idxs)
+        #np.random.shuffle(idxs)
         #total = np.arange(10000)
         #np.random.shuffle(total)
         idxs_train = idxs[0:420]
