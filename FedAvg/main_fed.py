@@ -25,32 +25,6 @@ from FedNets import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 from FedNets import VGG
 
 
-# def test(net_g, data_loader, args):
-#     # testing
-#     test_loss = 0
-#     correct = 0
-#     l = len(data_loader)
-#     for idx, (data, target) in enumerate(data_loader):
-#         if args.gpu != -1:
-#             data, target = data.cuda(), target.cuda()
-#         data, target = autograd.Variable(data), autograd.Variable(target)
-#         log_probs = net_g(data)
-#         test_loss += F.nll_loss(log_probs, target, size_average=False).item() # sum up batch loss
-#         y_pred = log_probs.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-#         correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
-#
-#     test_loss /= len(data_loader.dataset)
-#     f = open('./test.txt', 'a')
-#     print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
-#         test_loss, correct, len(data_loader.dataset),
-#         100. * correct / len(data_loader.dataset)),file=f)
-#     print('\nTest set: Average loss: {:.4f} \nAccuracy: {}/{} ({:.2f}%)\n'.format(
-#         test_loss, correct, len(data_loader.dataset),
-#         100. * correct / len(data_loader.dataset)))
-#     f.close()
-#     return correct, test_loss
-
-
 if __name__ == '__main__':
     # parse args
     args = args_parser()
@@ -86,11 +60,19 @@ if __name__ == '__main__':
             dict_users = mnist_noniid(dataset_train, args.num_users)
 
     elif args.dataset == 'cifar':
-        transform = transforms.Compose(
-            [transforms.ToTensor(),
-             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        dataset_train = datasets.CIFAR10('../data/cifar', train=True, transform=transform, target_transform=None, download=True)
-        dataset_test = datasets.CIFAR10('../data/cifar', train=False, transform=transform, target_transform=None, download=True)
+        transform_train = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        ])
+
+        transform_test = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+        ])
+        dataset_train = datasets.CIFAR10('../data/cifar', train=True, transform=transform_train, target_transform=None, download=True)
+        dataset_test = datasets.CIFAR10('../data/cifar', train=False, transform=transform_test, target_transform=None, download=True)
 
         if args.iid == 1:
             #print("iid==1")
@@ -185,11 +167,9 @@ if __name__ == '__main__':
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
             m = args.num_users
-            #print("**********m=",m)
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
         else:
             m = max(int(args.frac * args.num_users), 1)
-            #print("**********m=", m)
             #m is select how many ready client to use， default is 10
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
@@ -254,18 +234,18 @@ if __name__ == '__main__':
         #for every users is because in before every test is different, but now they are same
         #so we can use only one to test
         # if(args.alltest == 1):
-        #     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
+        net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=0, tb=summary)
+        acc, loss = net_local.test(net=net_glob)
+        acc_avg = acc
+            #loss_avg = loss
+        # elif(args.alltest == 0):
+        # for c in range(args.num_users):
+        #     #test is not according to users, is the same
+        #     #test in all 180*80 samples
+        #     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
         #     acc, loss = net_local.test(net=net_glob)
-        #     acc_avg = acc
-        #     #loss_avg = loss
-        #elif(args.alltest == 0):
-        for c in range(args.num_users):
-            #test is not according to users, is the same
-            #test in all 180*80 samples
-            net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
-            acc, loss = net_local.test(net=net_glob)
-            list_acc.append(acc)
-            list_loss.append(loss)
+        #     list_acc.append(acc)
+        #     list_loss.append(loss)
         acc_avg = 100. * sum(list_acc) / len(list_acc)
         f = open('./test.txt', 'a')
         print('\nTrain loss:', loss_avg)

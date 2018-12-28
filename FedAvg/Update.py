@@ -48,22 +48,27 @@ class LocalUpdate(object):
 
 
     def train_val_test(self, dataset, testset, idxs):
+        # if(self.args.iid == 2):
+        #     idxs_test = idxs[0:120]
+        #     idxs = idxs[120:]
+        #     np.random.shuffle(idxs)
+        #     idxs_val = idxs[420:480]
+        #     idxs_train = idxs[0:420]
+        # else:
+        #     idxs_train = idxs[0:420]
+        #     idxs_val = idxs[420:480]
+        #
+        #     idxs_test = idxs[480:600]
+        np.random.shuffle(idxs)
+        idxs_train = idxs[:600]
 
-        if(self.args.iid == 2):
-            idxs_test = idxs[0:120]
-            idxs = idxs[120:]
-            np.random.shuffle(idxs)
-            idxs_val = idxs[420:480]
-            idxs_train = idxs[0:420]
-        else:
-            idxs_train = idxs[0:420]
-            idxs_val = idxs[420:480]
+        idxs_val = np.arange(3000)
 
-            idxs_test = idxs[480:600]
+        idxs_test = np.arange(10000)
 
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
-        val = DataLoader(DatasetSplit(dataset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-        test = DataLoader(DatasetSplit(dataset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+        val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
+        test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/1000), shuffle=True)
 
         return train, val, test
 
