@@ -244,8 +244,8 @@ if __name__ == '__main__':
         #     #test in all 180*80 samples
         #     net_local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=c, tb=summary)
         #     acc, loss = net_local.test(net=net_glob)
-        #     list_acc.append(acc)
-        #     list_loss.append(loss)
+        list_acc.append(acc)
+        list_loss.append(loss)
         acc_avg = 100. * sum(list_acc) / len(list_acc)
         f = open('./test.txt', 'a')
         print('\nTrain loss:', loss_avg)
