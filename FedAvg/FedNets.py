@@ -57,14 +57,12 @@ class CNNCifar(nn.Module):
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
-        x = F.max_pool2d(x, 2)
         x = self.pool(F.relu(self.conv2(x)))
-        x = F.max_pool2d(x, 2)
-        x = x.view(x.size(0), -1)
+        x = x.view(-1, 16 * 5 * 5)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
-        return x
+        return F.log_softmax(x, dim=1)
 
 
 ######3######ResNet for cifar10
