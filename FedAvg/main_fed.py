@@ -10,7 +10,7 @@ import os
 import copy
 import numpy as np
 from torchvision import datasets, transforms
-#from tqdm import tqdm
+from tqdm import tqdm
 import torch
 import torch.nn.functional as F
 from torch import autograd
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     val_acc_list, net_list = [], []
     #tqdm jin du tiao
     #allids = []
-    for iter in range(args.epochs):
+    for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
             m = args.num_users
