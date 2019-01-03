@@ -77,7 +77,7 @@ class LocalUpdate(object):
     def update_weights(self, net):
         net.train()
         # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.9, weight_decay=5e-4)
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5, weight_decay=1e-5)
         epoch_loss = []
         for iter in range(self.args.local_ep):
             batch_loss = []
