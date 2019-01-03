@@ -187,7 +187,7 @@ if __name__ == '__main__':
         #for every select users
         #idxs_users is some numbers
         if(args.exchange == 0):
-            for idx in idxs_users:
+            for idx in tqdm(idxs_users):
                 # print("user num id",idx)
                 # allids.append(idx)
                 # allids.sort()
@@ -210,7 +210,7 @@ if __name__ == '__main__':
             #w_locals and loss_locals return all select idxs_users
 
         elif(args.exchange == 1):
-            for idx in idxs_users:
+            for idx in tqdm(idxs_users):
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
