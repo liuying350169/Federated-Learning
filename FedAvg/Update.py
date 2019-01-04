@@ -97,8 +97,6 @@ class LocalUpdate(object):
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
-
-
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     def exchange_weight(self, net):
@@ -108,25 +106,26 @@ class LocalUpdate(object):
         epoch_loss = []
         #exchange trainset in how many clients
         idxs = self.idxs
-        for iter in range(self.args.local_ep):
+        for iter in range(self.args.local_ex):
             batch_loss = []
             #for every sample in trainset to prob, and calcu the loss then optimizer
             #we should change the trainset every time
             i = (self.i + iter) % self.args.num_users
             ldr_train, ldr_val, ldr_test = self.train_val_test(self.dataset, self.testset, list(idxs[i]))
-            for batch_idx, (images, labels) in enumerate(ldr_train):
-                if self.args.gpu != -1:
-                    images, labels = images.cuda(), labels.cuda()
-                images, labels = autograd.Variable(images), autograd.Variable(labels)
-                net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs, labels)
-                loss.backward()
-                optimizer.step()
-                if self.args.gpu != -1:
-                    loss = loss.cpu()
-                self.tb.add_scalar('loss', loss.item())
-                batch_loss.append(loss.item())
+            for iter_ep in range(self.args.local_ep):
+                for batch_idx, (images, labels) in enumerate(ldr_train):
+                    if self.args.gpu != -1:
+                        images, labels = images.cuda(), labels.cuda()
+                    images, labels = autograd.Variable(images), autograd.Variable(labels)
+                    net.zero_grad()
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs, labels)
+                    loss.backward()
+                    optimizer.step()
+                    if self.args.gpu != -1:
+                        loss = loss.cpu()
+                    self.tb.add_scalar('loss', loss.item())
+                    batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
