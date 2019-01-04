@@ -102,7 +102,7 @@ class LocalUpdate(object):
 
     def exchange_weight(self, net):
         net.train()
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.9, weight_decay=5e-4)
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5, weight_decay=1e-5)
         epoch_loss = []
         #exchange trainset in how many clients
         idxs = self.idxs

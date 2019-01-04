@@ -118,6 +118,7 @@ if __name__ == '__main__':
             net_glob = ResNet18().cuda()
         else:
             net_glob = ResNet18()
+
     elif args.model == 'resnet34' and args.dataset == 'cifar':
         if args.gpu != -1:
             torch.cuda.set_device(args.gpu)
