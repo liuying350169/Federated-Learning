@@ -69,7 +69,7 @@ class LocalUpdate(object):
 
         train = DataLoader(DatasetSplit(dataset, idxs_train), batch_size=self.args.local_bs, shuffle=True)
         val = DataLoader(DatasetSplit(testset, idxs_val), batch_size=int(len(idxs_val)/10), shuffle=True)
-        test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/10), shuffle=True)
+        test = DataLoader(DatasetSplit(testset, idxs_test), batch_size=int(len(idxs_test)/100), shuffle=True)
 
         return train, val, test
 
