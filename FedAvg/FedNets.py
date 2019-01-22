@@ -274,7 +274,7 @@ class MobileNetV2(nn.Module):
         return out
 
 
-##############shufflenetv2################
+##############shufflenetv########################
 
 class ShuffleBlock(nn.Module):
     def __init__(self, groups=2):
