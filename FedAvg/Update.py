@@ -106,11 +106,19 @@ class LocalUpdate(object):
         epoch_loss = []
         #exchange trainset in how many clients
         idxs = self.idxs
+        subset_clients = int(self.args.num_users/self.args.groups)
+
+        if(self.args.local_ex!=subset_clients):
+            exit('Error: self.args.local_ex!=subset_clients')
+
         for iter in range(self.args.local_ex):
             batch_loss = []
             #for every sample in trainset to prob, and calcu the loss then optimizer
             #we should change the trainset every time
-            i = (self.i + iter) % self.args.num_users
+
+            #i = (self.i + iter) % self.args.num_users
+            group = int(self.i / 10)  # 8
+            i = int(group*10 + iter)
             ldr_train, ldr_val, ldr_test = self.train_val_test(self.dataset, self.testset, list(idxs[i]))
             for iter_ep in range(self.args.local_ep):
                 for batch_idx, (images, labels) in enumerate(ldr_train):
