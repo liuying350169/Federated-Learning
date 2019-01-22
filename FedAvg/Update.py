@@ -117,8 +117,34 @@ class LocalUpdate(object):
             #we should change the trainset every time
 
             #i = (self.i + iter) % self.args.num_users
-            group = int(self.i / 10)  # 8
-            i = int(group*10 + iter)
+            if (self.args.groups ==2):
+                group = int(self.i / 10)
+                if(group > 4):
+                    i = int(50 + iter)
+                else:
+                    i = int(0 + iter)
+
+            if(self.args.groups == 5):
+                group = int(self.i / 10)
+                group_2 = int(self.i % 10)
+                if(group_2 > 4):
+                    i = int(group * 10 + 5 + iter)
+                else:
+                    i = int(group * 10 + 0 + iter)
+
+            if(self.args.groups == 10):
+                group = int(self.i / 10)
+                i = int(group * 10 + iter)
+
+            if(self.args.groups == 20):
+                group = int(self.i / 10)
+                if(group % 2 == 0): #even
+                    i = int(group * 10 + iter)
+                if(group % 2 == 1):  # odd
+                    i = int((group-1)*10 +iter)
+
+
+
             ldr_train, ldr_val, ldr_test = self.train_val_test(self.dataset, self.testset, list(idxs[i]))
             for iter_ep in range(self.args.local_ep):
                 for batch_idx, (images, labels) in enumerate(ldr_train):
