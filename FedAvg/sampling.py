@@ -158,10 +158,10 @@ def cifar_noniid(dataset, num_users):
     :param num_users:
     :return: dict of image index
     """
-    if(num_users >80):
-        num_users = 80
+    if(num_users >100):
+        num_users = 100
     #print(len(dataset))
-    num_shards, num_imgs = 160, 300 #48000
+    num_shards, num_imgs = 200, 250 #50000
     #num_shards is 200, and idx_shard is 0-199
     idx_shard = [i for i in range(num_shards)]
     #print(idx_shard)
@@ -179,7 +179,7 @@ def cifar_noniid(dataset, num_users):
     #it is real label
     labels = dataset.train_labels
     #print(len(labels))
-    labels = labels[0:48000]
+    labels = labels[0:50000]
    # print(len(labels))
 
     # for i in labels:
