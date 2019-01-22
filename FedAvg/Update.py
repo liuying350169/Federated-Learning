@@ -124,7 +124,7 @@ class LocalUpdate(object):
                 else:
                     i = int(0 + iter)
 
-            if(self.args.groups == 5):
+            if(self.args.groups == 20):
                 group = int(self.i / 10)
                 group_2 = int(self.i % 10)
                 if(group_2 > 4):
@@ -136,7 +136,7 @@ class LocalUpdate(object):
                 group = int(self.i / 10)
                 i = int(group * 10 + iter)
 
-            if(self.args.groups == 20):
+            if(self.args.groups == 5):
                 group = int(self.i / 10)
                 if(group % 2 == 0): #even
                     i = int(group * 10 + iter)
