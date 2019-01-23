@@ -126,8 +126,8 @@ if __name__ == '__main__':
             dict_users = cifar100_noniid(dataset_train, args.num_users)
 
     elif args.dataset == 'kws':
-        dataset_train = KWSconstructor('../data/kws', transform=None)
-        dataset_test = KWSconstructor('../data/kws', transform=None)
+        dataset_train = KWSconstructor('../data/kws/index_train.txt', transform=None)
+        dataset_test = KWSconstructor('../data/kws/index_test.txt', transform=None)
         if args.iid==1:
             dict_users = KWS_iid(dataset_train, args.num_users)
         else:
