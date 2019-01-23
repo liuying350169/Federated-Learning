@@ -16,7 +16,8 @@ import torch.nn.functional as F
 from torch import autograd
 from tensorboardX import SummaryWriter
 
-from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid, cifar_noniid_extram, cifar100_iid, cifar100_noniid, cifar100_noniid_extram
+from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, cifar_noniid, cifar_noniid_extram, \
+    cifar100_iid, cifar100_noniid, cifar100_noniid_extram, KWS_iid, KWS_noniid
 from options import args_parser
 from Update import LocalUpdate
 from FedNets import MLP, CNNMnist, CNNCifar
@@ -26,6 +27,27 @@ from FedNets import VGG
 from FedNets import MobileNetV2
 from FedNets import ShuffleNetV2
 
+
+class KWSconstructor(Dataset):
+    def __init__(self, root, transform=None):
+        f = open(root, 'r')
+        data = []
+        for line in f:
+            s = line.split('\n')
+            info = s[0].split(' ')
+            data.append((info[0], int(info[1])))
+        self.data = data
+        self.transform = transform
+
+    def __getitem__(self, index):
+        f, label = self.data[index]
+        feature = np.loadtxt(f)
+        if self.transform is not None:
+            feature = self.transform(feature)
+        return feature, label
+
+    def __len__(self):
+        return len(self.data)
 
 if __name__ == '__main__':
     # parse args
@@ -101,6 +123,14 @@ if __name__ == '__main__':
             dict_users = cifar100_noniid_extram(dataset_train, args.num_users)
         else:
             dict_users = cifar100_noniid(dataset_train, args.num_users)
+
+    elif args.dataset == 'kws':
+        dataset_train = KWSconstructor('../data/kws', transform=None)
+        dataset_test = KWSconstructor('../data/kws', transform=None)
+        if args.iid==1:
+            dict_users = KWS_iid(dataset_train, args.num_users)
+        else:
+            dict_users = KWS_noniid(dataset_train, args.num_users)
 
     else:
         exit('Error: unrecognized dataset')
