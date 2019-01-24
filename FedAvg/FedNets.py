@@ -9,7 +9,7 @@ import torch.nn.functional as F
 
 class CNNKws(nn.Module):
 
-    def __init__(self):
+    def __init__(self, args):
         super(CNNKws, self).__init__()
         self.conv1 = nn.Conv2d(1, 28, kernel_size=(10, 4), stride=(1, 1))
         self.conv2 = nn.Conv2d(28, 30, kernel_size=(10, 4), stride=(1, 2))
