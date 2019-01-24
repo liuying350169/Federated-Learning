@@ -43,6 +43,8 @@ class KWSconstructor(Dataset):
     def __getitem__(self, index):
         f, label = self.data[index]
         feature = np.loadtxt(f)
+        feature = np.reshape(feature, (1, 50, 10))
+        feature = feature.astype(np.float32)
         if self.transform is not None:
             feature = self.transform(feature)
         return feature, label
