@@ -53,7 +53,7 @@ def KWS_noniid(dataset, num_users):
     #labels is dataset's label
     #len is 60000
     #it is real label
-    labels = dataset.train_labels
+    labels = dataset.label
     np.random.shuffle(labels)
     #print(len(labels))
     labels = labels[0:32000]
