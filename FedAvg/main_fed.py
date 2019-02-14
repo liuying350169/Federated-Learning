@@ -258,9 +258,8 @@ if __name__ == '__main__':
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
 
-                print("torch.save")
                 torch.save(w, 'last_model_92_sgd.pkl')
-                print("over")
+
                 #w_locals is [], an empty []
                 #w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
@@ -276,7 +275,7 @@ if __name__ == '__main__':
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
-
+                torch.save(w, 'last_model_92_sgd.pkl')
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
 
