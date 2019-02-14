@@ -218,6 +218,7 @@ if __name__ == '__main__':
 
     # copy weights
     w_glob = net_glob.state_dict()
+
     #net_glob is the global model
     #state_dict() is the weights of a model
 
@@ -256,13 +257,18 @@ if __name__ == '__main__':
                 #use global to train
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
-
+                torch.save({
+                    'epoch': idx,
+                    'state_dict': w,
+                }, 'checkpoint.tar')
                 #w_locals is [], an empty []
                 #w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
                 #loss_locals is [], an empty []
                 #loss_locals save the loss
                 loss_locals.append(copy.deepcopy(loss))
+
+
             #w_locals and loss_locals return all select idxs_users
 
         elif(args.exchange == 1):
@@ -270,6 +276,7 @@ if __name__ == '__main__':
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
+
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
 
