@@ -257,10 +257,10 @@ if __name__ == '__main__':
                 #use global to train
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
-                torch.save({
-                    'epoch': idx,
-                    'state_dict': w,
-                }, './checkpoint.tar')
+
+                print("torch.save")
+                torch.save(w, 'last_model_92_sgd.pkl')
+                print("over")
                 #w_locals is [], an empty []
                 #w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
