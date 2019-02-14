@@ -258,6 +258,11 @@ if __name__ == '__main__':
                 # loss is the sum(epoch_loss) / len(epoch_loss)
 
                 torch.save(w, 'last_model_92_sgd.txt')
+                params = w
+                f_params = open('./params.txt', 'a')
+                print(params['conv1.weight'], file=f_params)
+                print(params['conv1.bias'], file=f_params)
+                f_params.close()
 
 
                 #w_locals is [], an empty []
@@ -279,8 +284,9 @@ if __name__ == '__main__':
                 torch.save(w, 'last_model_92_sgd.txt')
                 params = w
                 f_params = open('./params.txt', 'a')
-                print(params['conv1.weight'], file=f)
-                print(params['conv1.bias'], file=f)
+                print(params['conv1.weight'], file=f_params)
+                print(params['conv1.bias'], file=f_params)
+                f_params.close()
 
 
                 w_locals.append(copy.deepcopy(w))
