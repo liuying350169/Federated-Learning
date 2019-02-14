@@ -313,6 +313,8 @@ if __name__ == '__main__':
 
                 torch.save(w, 'last_model_92_sgd.txt')
                 params = w
+                for k, v in params.items():
+                    print(k)
                 f_params = open('./params_conv1.txt', 'a')
                 print(params['conv1.weight'], file=f_params)
                 print(params['conv1.bias'], file=f_params)
