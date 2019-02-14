@@ -260,7 +260,7 @@ if __name__ == '__main__':
                 torch.save({
                     'epoch': idx,
                     'state_dict': w,
-                }, 'checkpoint.tar')
+                }, './checkpoint.tar')
                 #w_locals is [], an empty []
                 #w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
