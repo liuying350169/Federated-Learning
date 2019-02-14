@@ -265,12 +265,6 @@ if __name__ == '__main__':
                 f_params.close()
 
                 params = w
-                f_params = open('./params_pool.txt', 'a')
-                print(params['pool.weight'], file=f_params)
-                print(params['pool.bias'], file=f_params)
-                f_params.close()
-
-                params = w
                 f_params = open('./params_conv2.txt', 'a')
                 print(params['conv2.weight'], file=f_params)
                 print(params['conv2.bias'], file=f_params)
@@ -313,17 +307,9 @@ if __name__ == '__main__':
 
                 torch.save(w, 'last_model_92_sgd.txt')
                 params = w
-                for k, v in params.items():
-                    print(k)
                 f_params = open('./params_conv1.txt', 'a')
                 print(params['conv1.weight'], file=f_params)
                 print(params['conv1.bias'], file=f_params)
-                f_params.close()
-
-                params = w
-                f_params = open('./params_pool.txt', 'a')
-                print(params['pool.weight'], file=f_params)
-                print(params['pool.bias'], file=f_params)
                 f_params.close()
 
                 params = w
