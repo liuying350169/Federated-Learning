@@ -259,6 +259,7 @@ if __name__ == '__main__':
 
                 torch.save(w, 'last_model_92_sgd.txt')
 
+
                 #w_locals is [], an empty []
                 #w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
@@ -274,7 +275,14 @@ if __name__ == '__main__':
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
+
                 torch.save(w, 'last_model_92_sgd.txt')
+                params = w
+                f_params = open('./params.txt', 'a')
+                print(params['conv1.weight'], file=f)
+                print(params['conv1.bias'], file=f)
+
+
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
 
