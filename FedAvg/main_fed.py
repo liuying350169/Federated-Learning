@@ -240,7 +240,6 @@ if __name__ == '__main__':
             m = max(int(args.frac * args.num_users), 1)
             #m is select how many ready client to use， default is 10
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
-
         #for every select users
         #idxs_users is some numbers
         if(args.exchange == 0):
@@ -258,7 +257,7 @@ if __name__ == '__main__':
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
 
-                torch.save(w, 'last_model_92_sgd.pkl')
+                torch.save(w, 'last_model_92_sgd.txt')
 
                 #w_locals is [], an empty []
                 #w_locals save the local weight
@@ -275,7 +274,7 @@ if __name__ == '__main__':
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
-                torch.save(w, 'last_model_92_sgd.pkl')
+                torch.save(w, 'last_model_92_sgd.txt')
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
 
