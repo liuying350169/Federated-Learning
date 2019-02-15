@@ -269,7 +269,7 @@ if __name__ == '__main__':
 
                 f_a = open('./a_conv1.txt', 'a')
                 a.append(params['conv1.weight'].cpu().numpy())
-                print(a, f=f_a)
+                print(a,file=f_a)
                 f_a.close()
 
                 ii=ii+1
@@ -289,13 +289,13 @@ if __name__ == '__main__':
                                     x = []
                                     for i in range(100):
                                         x.append(a[i][j][k][m][n])
-                    print(res_var, len(res_var),f=f_mean)
-                    print(res_std, len(res_std),f=f_mean)
+                    print(res_var, len(res_var),file=f_mean)
+                    print(res_std, len(res_std),file=f_mean)
 
                     mean_var = np.mean(res_var)
-                    print(mean_var,f=f_mean)
+                    print(mean_var,file=f_mean)
                     mean_std = np.mean(res_std)
-                    print(mean_std,f=f_mean)
+                    print(mean_std,file=f_mean)
 
                     f_mean.close()
                     a = []
