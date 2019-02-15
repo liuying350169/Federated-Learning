@@ -346,7 +346,7 @@ if __name__ == '__main__':
                 print(params['conv1.bias'], file=f_params)
                 f_params.close()
 
-                a.append(params['conv1.weight'].numpy())
+                a.append(params['conv1.weight'].cpu().numpy())
                 if(idx == 99):
                     f_mean = open('./mean_conv1.txt', 'a')
                     x = []
