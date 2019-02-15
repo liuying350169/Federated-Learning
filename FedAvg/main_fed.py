@@ -245,6 +245,7 @@ if __name__ == '__main__':
         #idxs_users is some numbers
         if(args.exchange == 0):
             a = []
+            ii = 0
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
                 # allids.append(idx)
@@ -266,9 +267,15 @@ if __name__ == '__main__':
                 print(params['conv1.bias'], file=f_params)
                 f_params.close()
 
+                f_a = open('./a_conv1.txt', 'a')
                 a.append(params['conv1.weight'].cpu().numpy())
-                if(idx == 99):
+                print(a, f=f_a)
+                f_a.close()
+
+                ii=ii+1
+                if(ii%100 == 0):
                     f_mean = open('./mean_conv1.txt', 'a')
+
                     x = []
                     res_var = []
                     res_std = []
@@ -282,7 +289,6 @@ if __name__ == '__main__':
                                     x = []
                                     for i in range(100):
                                         x.append(a[i][j][k][m][n])
-
                     print(res_var, len(res_var),f=f_mean)
                     print(res_std, len(res_std),f=f_mean)
 
@@ -290,8 +296,10 @@ if __name__ == '__main__':
                     print(mean_var,f=f_mean)
                     mean_std = np.mean(res_std)
                     print(mean_std,f=f_mean)
+
                     f_mean.close()
                     a = []
+
 
 
 
