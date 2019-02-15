@@ -267,15 +267,15 @@ if __name__ == '__main__':
                 print(params['conv1.bias'], file=f_params)
                 f_params.close()
 
-                f_a = open('./a_conv1.txt', 'a')
-                a.append(params['conv1.weight'].cpu().numpy())
+                f_a = open('./a_conv11.txt', 'a')
+                a.append(params['conv1.weight'].data.cpu().numpy())
                 print(a,file=f_a)
                 f_a.close()
 
                 ii=ii+1
+
                 if(ii%100 == 0):
                     f_mean = open('./mean_conv1.txt', 'a')
-
                     x = []
                     res_var = []
                     res_std = []
