@@ -244,6 +244,7 @@ if __name__ == '__main__':
         #for every select users
         #idxs_users is some numbers
         if(args.exchange == 0):
+            a = []
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
                 # allids.append(idx)
@@ -264,6 +265,35 @@ if __name__ == '__main__':
                 print(params['conv1.weight'], file=f_params)
                 print(params['conv1.bias'], file=f_params)
                 f_params.close()
+
+                a.append(params['conv1.weight'].numpy())
+                if(idx == 99):
+                    f_mean = open('./mean_conv1.txt', 'a')
+                    x = []
+                    res_var = []
+                    res_std = []
+                    for j in range(3):
+                        for k in range(6):
+                            for m in range(5):
+                                for n in range(5):
+                                    if (len(x) != 0):
+                                        res_var.append(np.var(x))
+                                        res_std.append(np.std(x, ddof=1))
+                                    x = []
+                                    for i in range(100):
+                                        x.append(a[i][j][k][m][n])
+
+                    print(res_var, len(res_var),f=f_mean)
+                    print(res_std, len(res_std),f=f_mean)
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var,f=f_mean)
+                    mean_std = np.mean(res_std)
+                    print(mean_std,f=f_mean)
+                    f_mean.close()
+                    a = []
+
+
 
                 params = w
                 f_params = open('./params_conv2.txt', 'a')
