@@ -164,8 +164,8 @@ class LocalUpdate(object):
         #         loss = self.loss_func(log_probs, labels)
         #         loss.backward()
         #         optimizer.step()
-        f_prob = open('./probs.txt', 'a')
-        print("new round###self.i:{}".format(self.i), file=f_prob)
+        # f_prob = open('./probs.txt', 'a')
+        # print("new round###self.i:{}".format(self.i), file=f_prob)
         list_acc, list_loss = [], []
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             #after dataloader ldr_test there are three parts in ldr_test
@@ -186,14 +186,11 @@ class LocalUpdate(object):
             y_pred = np.argmax(log_probs.data, axis=1)
             acc = metrics.accuracy_score(y_true=labels.data, y_pred=y_pred)
             loss = loss.item()
-            print("batch_idx:{}|\ny_pred:{}|\nlabels:{}|\nacc:{}".format(batch_idx, y_pred, labels, acc), file=f_prob)
             list_acc.append(acc)
             list_loss.append(loss)
 
         avg_acc = sum(list_acc)/len(list_acc)
         avg_loss = loss
-        print("####avgacc:{}".format(avg_acc),file=f_prob)
-        f_prob.close()
         return  avg_acc, avg_loss
 
 if __name__ == "__main__":
