@@ -270,8 +270,6 @@ if __name__ == '__main__':
 
                 for i in range(450):
                     x[i].append(a[i])
-                    print(x[i])
-                print(a)
 
 
                 if(idx%100==0):
@@ -279,14 +277,11 @@ if __name__ == '__main__':
                     res_var = []
                     res_std = []
                     for i in range(450):
-                        print(x[i])
                         res_var.append(np.var(x[i]))
                         res_std.append(np.std(x[i],ddof=1))
 
                     print(res_var)
                     print(res_std)
-                    print(res_var, len(res_var),file=f_mean)
-                    print(res_std, len(res_std),file=f_mean)
 
                     mean_var = np.mean(res_var)
                     print(mean_var,file=f_mean)
@@ -349,23 +344,17 @@ if __name__ == '__main__':
 
                 for i in range(450):
                     x[i].append(a[i])
-                    print(x[i])
-                print(a)
-
 
                 if(idx%100==0):
                     f_mean = open('./mean_conv1.txt', 'a')
                     res_var = []
                     res_std = []
                     for i in range(450):
-                        print(x[i])
                         res_var.append(np.var(x[i]))
                         res_std.append(np.std(x[i],ddof=1))
 
                     print(res_var)
                     print(res_std)
-                    print(res_var, len(res_var),file=f_mean)
-                    print(res_std, len(res_std),file=f_mean)
 
                     mean_var = np.mean(res_var)
                     print(mean_var,file=f_mean)
