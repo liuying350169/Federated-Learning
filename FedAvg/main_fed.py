@@ -281,8 +281,8 @@ if __name__ == '__main__':
                         res_var.append(np.var(x[i]))
                         res_std.append(np.std(x[i],ddof=1))
 
-                    print(res_var)
-                    print(res_std)
+                    #print(res_var)
+                    #print(res_std)
 
                     mean_var = np.mean(res_var)
                     print(mean_var,file=f_mean_var)
@@ -355,8 +355,8 @@ if __name__ == '__main__':
                         res_var.append(np.var(x[i]))
                         res_std.append(np.std(x[i],ddof=1))
 
-                    print(res_var)
-                    print(res_std)
+                    #print(res_var)
+                    #print(res_std)
 
                     mean_var = np.mean(res_var)
                     print(mean_var,file=f_mean)
