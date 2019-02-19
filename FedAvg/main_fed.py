@@ -230,8 +230,8 @@ if __name__ == '__main__':
     val_loss_pre, counter = 0, 0
     net_best = None
     val_acc_list, net_list = [], []
-    #tqdm jin du tiao
-    #allids = []
+    # tqdm jin du tiao
+    # allids = []
     for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
@@ -241,8 +241,8 @@ if __name__ == '__main__':
             m = max(int(args.frac * args.num_users), 1)
             #m is select how many ready client to use， default is 10
             idxs_users = np.random.choice(range(args.num_users), m, replace=False)
-        #for every select users
-        #idxs_users is some numbers
+        # for every select users
+        # idxs_users is some numbers
         if(args.exchange == 0):
             a = []
             ii = 0
@@ -251,12 +251,12 @@ if __name__ == '__main__':
                 # allids.append(idx)
                 # allids.sort()
                 # print(allids)
-                #use LocalUpdate to update weight
-                #train_test_validate has [] [] []
+                # use LocalUpdate to update weight
+                # train_test_validate has [] [] []
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
-                #LocalUpdate initial
+                # LocalUpdate initial
                 w, loss = local.update_weights(net=copy.deepcopy(net_glob))
-                #use global to train
+                # use global to train
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
 
@@ -269,38 +269,8 @@ if __name__ == '__main__':
 
                 f_a = open('./a_conv11.txt', 'a')
                 a.append(params['conv1.weight'].data.cpu().numpy())
-                print(a,file=f_a)
+                print(a, file=f_a)
                 f_a.close()
-
-                ii=ii+1
-
-                if(ii%100 == 0):
-                    f_mean = open('./mean_conv1.txt', 'a')
-                    x = []
-                    res_var = []
-                    res_std = []
-                    for j in range(3):
-                        for k in range(6):
-                            for m in range(5):
-                                for n in range(5):
-                                    if (len(x) != 0):
-                                        res_var.append(np.var(x))
-                                        res_std.append(np.std(x, ddof=1))
-                                    x = []
-                                    for i in range(100):
-                                        x.append(a[i][j][k][m][n])
-                    print(res_var, len(res_var),file=f_mean)
-                    print(res_std, len(res_std),file=f_mean)
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var,file=f_mean)
-                    mean_std = np.mean(res_std)
-                    print(mean_std,file=f_mean)
-
-                    f_mean.close()
-                    a = []
-
-
 
 
                 params = w
@@ -330,18 +300,18 @@ if __name__ == '__main__':
 
 
 
-                #w_locals is [], an empty []
-                #w_locals save the local weight
+                # w_locals is [], an empty []
+                # w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
-                #loss_locals is [], an empty []
-                #loss_locals save the loss
+                # loss_locals is [], an empty []
+                # loss_locals save the loss
                 loss_locals.append(copy.deepcopy(loss))
 
 
-            #w_locals and loss_locals return all select idxs_users
+            # w_locals and loss_locals return all select idxs_users
 
         elif(args.exchange == 1):
-            a = []
+            x = [[] for i in range(450)]
             for idx in tqdm(idxs_users):
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
@@ -354,32 +324,34 @@ if __name__ == '__main__':
                 print(params['conv1.bias'], file=f_params)
                 f_params.close()
 
-                a.append(params['conv1.weight'].cpu().numpy())
-                if(idx == 99):
+                a = params['conv1.weight'].cpu().numpy().flatten()
+
+                for i in range(450):
+                    x[i].append(a[i])
+                    print(x[i])
+                print(a)
+
+
+                if(idx%100==0):
                     f_mean = open('./mean_conv1.txt', 'a')
                     x = []
                     res_var = []
                     res_std = []
-                    for j in range(3):
-                        for k in range(6):
-                            for m in range(5):
-                                for n in range(5):
-                                    if (len(x) != 0):
-                                        res_var.append(np.var(x))
-                                        res_std.append(np.std(x, ddof=1))
-                                    x = []
-                                    for i in range(100):
-                                        x.append(a[i][j][k][m][n])
+                    for i in range(450):
+                        res_var.append(np.var(x[i]))
+                        res_std.append(np.std(x[i],ddof=1))
 
-                    print(res_var, len(res_var),f=f_mean)
-                    print(res_std, len(res_std),f=f_mean)
+                    print(res_var)
+                    print(res_std)
+                    print(res_var, len(res_var),file=f_mean)
+                    print(res_std, len(res_std),file=f_mean)
 
                     mean_var = np.mean(res_var)
-                    print(mean_var,f=f_mean)
+                    print(mean_var,file=f_mean)
                     mean_std = np.mean(res_std)
-                    print(mean_std,f=f_mean)
+                    print(mean_std,file=f_mean)
                     f_mean.close()
-                    a = []
+
 
 
                 params = w
