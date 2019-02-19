@@ -266,11 +266,6 @@ if __name__ == '__main__':
                 print(params['conv1.bias'], file=f_params)
                 f_params.close()
 
-                f_a = open('./a_conv11.txt', 'a')
-                a.append(params['conv1.weight'].data.cpu().numpy())
-                print(a, file=f_a)
-                f_a.close()
-
                 a = params['conv1.weight'].cpu().numpy().flatten()
 
                 for i in range(450):
@@ -358,7 +353,7 @@ if __name__ == '__main__':
                 print(a)
 
 
-                if(idx%2==0):
+                if(idx%100==0):
                     f_mean = open('./mean_conv1.txt', 'a')
                     res_var = []
                     res_std = []
