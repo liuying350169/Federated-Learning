@@ -244,8 +244,7 @@ if __name__ == '__main__':
         # for every select users
         # idxs_users is some numbers
         if(args.exchange == 0):
-            a = []
-            ii = 0
+            x = [[] for i in range(450)]
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
                 # allids.append(idx)
@@ -272,6 +271,33 @@ if __name__ == '__main__':
                 print(a, file=f_a)
                 f_a.close()
 
+                a = params['conv1.weight'].cpu().numpy().flatten()
+
+                for i in range(450):
+                    x[i].append(a[i])
+                    print(x[i])
+                print(a)
+
+
+                if(idx%100==0):
+                    f_mean = open('./mean_conv1.txt', 'a')
+                    res_var = []
+                    res_std = []
+                    for i in range(450):
+                        print(x[i])
+                        res_var.append(np.var(x[i]))
+                        res_std.append(np.std(x[i],ddof=1))
+
+                    print(res_var)
+                    print(res_std)
+                    print(res_var, len(res_var),file=f_mean)
+                    print(res_std, len(res_std),file=f_mean)
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var,file=f_mean)
+                    mean_std = np.mean(res_std)
+                    print(mean_std,file=f_mean)
+                    f_mean.close()
 
                 params = w
                 f_params = open('./params_conv2.txt', 'a')
@@ -332,12 +358,12 @@ if __name__ == '__main__':
                 print(a)
 
 
-                if(idx%100==0):
+                if(idx%2==0):
                     f_mean = open('./mean_conv1.txt', 'a')
-                    x = []
                     res_var = []
                     res_std = []
                     for i in range(450):
+                        print(x[i])
                         res_var.append(np.var(x[i]))
                         res_std.append(np.std(x[i],ddof=1))
 
@@ -351,8 +377,6 @@ if __name__ == '__main__':
                     mean_std = np.mean(res_std)
                     print(mean_std,file=f_mean)
                     f_mean.close()
-
-
 
                 params = w
                 f_params = open('./params_conv2.txt', 'a')
