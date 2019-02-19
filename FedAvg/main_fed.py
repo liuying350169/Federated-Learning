@@ -273,7 +273,8 @@ if __name__ == '__main__':
 
 
                 if(idx%100==0):
-                    f_mean = open('./mean_conv1.txt', 'a')
+                    f_mean_std = open('./mean_std_conv1.txt', 'a')
+                    f_mean_var = open('./mean_var_conv1.txt', 'a')
                     res_var = []
                     res_std = []
                     for i in range(450):
@@ -284,10 +285,11 @@ if __name__ == '__main__':
                     print(res_std)
 
                     mean_var = np.mean(res_var)
-                    print(mean_var,file=f_mean)
+                    print(mean_var,file=f_mean_var)
                     mean_std = np.mean(res_std)
-                    print(mean_std,file=f_mean)
-                    f_mean.close()
+                    print(mean_std,file=f_mean_std)
+                    f_mean_std.close()
+                    f_mean_var.close()
 
                 params = w
                 f_params = open('./params_conv2.txt', 'a')
