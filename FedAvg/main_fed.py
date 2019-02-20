@@ -273,7 +273,6 @@ if __name__ == '__main__':
                 for j in range(batch_num):
                     for i in range(total_params):
                         x_total[i].append(x[j][i])
-                    #print(len(x_total),len(x_total[0]),len(x_total[0][0]),x_total[0][0][0])
 
                 if (idx % 100 == 0):
                     f_mean_std = open('./mean_std.txt', 'a')
