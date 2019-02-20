@@ -66,9 +66,19 @@ class LocalUpdate(object):
     def update_weights(self, net):
         net.train()
         # train and update
-        #print("optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5)")
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr,weight_decay=5e-4)
+        #print("optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5, weight_decay=5e-4)")
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr)
         epoch_loss = []
+        conv1_params = 450
+        conv2_params = 2400
+        fc1_params = 48000
+        fc2_params = 10080
+        fc3_params = 840
+        x_conv1 = [[] for i in range(conv1_params)]
+        x_conv2 = [[] for i in range(conv2_params)]
+        x_fc1 = [[] for i in range(fc1_params)]
+        x_fc2 = [[] for i in range(fc2_params)]
+        x_fc3 = [[] for i in range(fc3_params)]
         for iter in range(self.args.local_ep):
             batch_loss = []
             #enumerate is meijv, means for everyone
@@ -85,13 +95,141 @@ class LocalUpdate(object):
                     loss = loss.cpu()
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
+
+#for every batch, collect the params of each layers
+                params = net.state_dict()
+                f_params = open('./params_conv1.txt', 'a')
+                print(params['conv1.weight'], file=f_params)
+                print(params['conv1.bias'], file=f_params)
+                f_params.close()
+
+                f_params = open('./params_conv2.txt', 'a')
+                print(params['conv2.weight'], file=f_params)
+                print(params['conv2.bias'], file=f_params)
+                f_params.close()
+
+                f_params = open('./params_fc1.txt', 'a')
+                print(params['fc1.weight'], file=f_params)
+                print(params['fc1.bias'], file=f_params)
+                f_params.close()
+
+                f_params = open('./params_fc2.txt', 'a')
+                print(params['fc2.weight'], file=f_params)
+                print(params['fc2.bias'], file=f_params)
+                f_params.close()
+
+                f_params = open('./params_fc3.txt', 'a')
+                print(params['fc3.weight'], file=f_params)
+                print(params['fc3.bias'], file=f_params)
+                f_params.close()
+
+                a_conv1 = params['conv1.weight'].cpu().numpy().flatten()
+                for i in range(conv1_params):
+                    x_conv1[i].append(a_conv1[i])
+
+                a_conv2 = params['conv2.weight'].cpu().numpy().flatten()
+                for i in range(conv2_params):
+                    x_conv2[i].append(a_conv2[i])
+
+                a_fc1 = params['fc1.weight'].cpu().numpy().flatten()
+                for i in range(fc1_params):
+                    x_fc1[i].append(a_fc1[i])
+
+                a_fc2 = params['fc2.weight'].cpu().numpy().flatten()
+                for i in range(fc2_params):
+                    x_fc2[i].append(a_fc2[i])
+
+                a_fc3 = params['fc3.weight'].cpu().numpy().flatten()
+                for i in range(fc3_params):
+                    x_fc3[i].append(a_fc3[i])
+
+                if (idx % 100 == 0):
+                    f_mean_std = open('./mean_std_conv1.txt', 'a')
+                    f_mean_var = open('./mean_var_conv1.txt', 'a')
+                    res_var = []
+                    res_std = []
+                    for i in range(conv1_params):
+                        res_var.append(np.var(x_conv1[i]))
+                        res_std.append(np.std(x_conv1[i], ddof=1))
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var, file=f_mean_var)
+                    mean_std = np.mean(res_std)
+                    print(mean_std, file=f_mean_std)
+                    f_mean_std.close()
+                    f_mean_var.close()
+
+                if (idx % 100 == 0):
+                    f_mean_std = open('./mean_std_conv2.txt', 'a')
+                    f_mean_var = open('./mean_var_conv2.txt', 'a')
+                    res_var = []
+                    res_std = []
+                    for i in range(conv2_params):
+                        res_var.append(np.var(x_conv2[i]))
+                        res_std.append(np.std(x_conv2[i], ddof=1))
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var, file=f_mean_var)
+                    mean_std = np.mean(res_std)
+                    print(mean_std, file=f_mean_std)
+                    f_mean_std.close()
+                    f_mean_var.close()
+
+
+                    f_mean_std = open('./mean_std_fc1.txt', 'a')
+                    f_mean_var = open('./mean_var_fc1.txt', 'a')
+                    res_var = []
+                    res_std = []
+                    for i in range(fc1_params):
+                        res_var.append(np.var(x_fc1[i]))
+                        res_std.append(np.std(x_fc1[i], ddof=1))
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var, file=f_mean_var)
+                    mean_std = np.mean(res_std)
+                    print(mean_std, file=f_mean_std)
+                    f_mean_std.close()
+                    f_mean_var.close()
+
+                    f_mean_std = open('./mean_std_fc2.txt', 'a')
+                    f_mean_var = open('./mean_var_fc2.txt', 'a')
+                    res_var = []
+                    res_std = []
+                    for i in range(fc2_params):
+                        res_var.append(np.var(x_fc2[i]))
+                        res_std.append(np.std(x_fc2[i], ddof=1))
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var, file=f_mean_var)
+                    mean_std = np.mean(res_std)
+                    print(mean_std, file=f_mean_std)
+                    f_mean_std.close()
+                    f_mean_var.close()
+
+                if (idx % 100 == 0):
+                    f_mean_std = open('./mean_std_fc3.txt', 'a')
+                    f_mean_var = open('./mean_var_fc3.txt', 'a')
+                    res_var = []
+                    res_std = []
+                    for i in range(fc3_params):
+                        res_var.append(np.var(x_fc3[i]))
+                        res_std.append(np.std(x_fc3[i], ddof=1))
+
+                    mean_var = np.mean(res_var)
+                    print(mean_var, file=f_mean_var)
+                    mean_std = np.mean(res_std)
+                    print(mean_std, file=f_mean_std)
+                    f_mean_std.close()
+                    f_mean_var.close()
+
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     def exchange_weight(self, net):
         net.train()
         #print("optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=0.5)")
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, weight_decay=5e-4)
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr)
         epoch_loss = []
         #exchange trainset in how many clients
         idxs = self.idxs
@@ -153,19 +291,6 @@ class LocalUpdate(object):
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     def test(self, net):
-        # optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, weight_decay=2)
-        # for iter in range(self.args.local_ep):
-        #     for batch_idx, (images, labels) in enumerate(self.ldr_train):
-        #         if self.args.gpu != -1:
-        #             images, labels = images.cuda(), labels.cuda()
-        #         images, labels = autograd.Variable(images), autograd.Variable(labels)
-        #         net.zero_grad()
-        #         log_probs = net(images)
-        #         loss = self.loss_func(log_probs, labels)
-        #         loss.backward()
-        #         optimizer.step()
-        # f_prob = open('./probs.txt', 'a')
-        # print("new round###self.i:{}".format(self.i), file=f_prob)
         list_acc, list_loss = [], []
         for batch_idx, (images, labels) in enumerate(self.ldr_test):
             #after dataloader ldr_test there are three parts in ldr_test

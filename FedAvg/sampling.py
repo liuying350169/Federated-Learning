@@ -318,7 +318,7 @@ def cifar_noniid_extram(dataset, num_users):
     :param num_users:
     :return: dict of image index
     """
-    num_users = 5
+    num_users = 10
     # num_shards, num_imgs = 160, 300  # 48000
     # num_shards is 200, and idx_shard is 0-199
     #idx_shard = [i for i in range(num_users)]
@@ -355,11 +355,16 @@ def cifar_noniid_extram(dataset, num_users):
     # new ids
     # [30207  5662 55366 ... 23285 15728 11924]
     idxs = idxs_labels[0, :]
-    p1 = idxs[0:10000]
-    p2 = idxs[10000:20000]
-    p3 = idxs[20000:30000]
-    p4 = idxs[30000:40000]
-    p5 = idxs[40000:50000]
+    p1 = idxs[0:5000]
+    p2 = idxs[5000:10000]
+    p3 = idxs[10000:15000]
+    p4 = idxs[15000:20000]
+    p5 = idxs[20000:25000]
+    p6 = idxs[25000:30000]
+    p7 = idxs[30000:35000]
+    p8 = idxs[35000:40000]
+    p9 = idxs[40000:45000]
+    p10 = idxs[45000:50000]
     #print(p1)
 
     # divide and assign
@@ -374,6 +379,16 @@ def cifar_noniid_extram(dataset, num_users):
             dict_users[i] = p4
         if(i==4):
             dict_users[i] = p5
+        if(i==5):
+            dict_users[i] = p6
+        if(i==6):
+            dict_users[i] = p7
+        if(i==7):
+            dict_users[i] = p8
+        if(i==8):
+            dict_users[i] = p9
+        if(i==9):
+            dict_users[i] = p10
     return dict_users
 
 def cifar100_iid(dataset, num_users):
