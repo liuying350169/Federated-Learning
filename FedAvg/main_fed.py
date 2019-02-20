@@ -275,7 +275,7 @@ if __name__ == '__main__':
                         x_total[i].append(x[j][i])
                     #print(len(x_total),len(x_total[0]),len(x_total[0][0]),x_total[0][0][0])
 
-                if (idx % 2 == 0):
+                if (idx % 100 == 0):
                     f_mean_std = open('./mean_std.txt', 'a')
                     f_mean_var = open('./mean_var.txt', 'a')
                     res_var = []
