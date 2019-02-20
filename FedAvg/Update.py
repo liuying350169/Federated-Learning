@@ -121,9 +121,8 @@ class LocalUpdate(object):
                 a_fc3 = params['fc3.weight'].cpu().numpy().flatten()
                 for i in range(fc3_params):
                     x_fc3[i].append(a_fc3[i])
-                print(counter_i)
+                #print(counter_i)
                 x[counter_i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
-                #print(len(x),len(x[counter_i]))
                 counter_i = (counter_i+1) % 4
 
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
