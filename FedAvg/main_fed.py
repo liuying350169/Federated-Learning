@@ -270,9 +270,11 @@ if __name__ == '__main__':
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
                 ### x is 4 params lists
+                #print(len(x), len(x[0]), len(x[0][0]),x[0][0][0], x[0][0], x[0])
+
                 for j in range(batch_num):
                     for i in range(total_params):
-                        x_total[i].append(x[j][i])
+                        x_total[i].append(x[j][i][0])
 
                 if (idx % 100 == 0):
                     f_mean_std = open('./mean_std.txt', 'a')
@@ -280,22 +282,16 @@ if __name__ == '__main__':
                     res_var = []
                     res_std = []
                     for i in range(total_params):
+                        #print(np.var(x_total[i]))
                         res_var.append(np.var(x_total[i]))
                         res_std.append(np.std(x_total[i], ddof=1))
 
-                    #print(res_var)
-                    #print(res_std)
                     mean_var = np.mean(res_var)
                     print(mean_var, file=f_mean_var)
                     mean_std = np.mean(res_std)
                     print(mean_std, file=f_mean_std)
                     f_mean_std.close()
                     f_mean_var.close()
-
-
-
-
-
 
                 # w_locals is [], an empty []
                 # w_locals save the local weight

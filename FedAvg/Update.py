@@ -86,6 +86,7 @@ class LocalUpdate(object):
             #print(iter)
             batch_loss = []
             #enumerate is meijv, means for everyone
+            counter_i = 0
             for batch_idx, (images, labels) in enumerate(self.ldr_train):
                 if self.args.gpu != -1:
                     images, labels = images.cuda(), labels.cuda()
@@ -99,33 +100,8 @@ class LocalUpdate(object):
                     loss = loss.cpu()
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
-#for every batch, collect the params of each layers
+                #for every batch, collect the params of each layers
                 params = net.state_dict()
-                # f_params = open('./params_conv1.txt', 'a')
-                # print(params['conv1.weight'], file=f_params)
-                # print(params['conv1.bias'], file=f_params)
-                # f_params.close()
-                #
-                # f_params = open('./params_conv2.txt', 'a')
-                # print(params['conv2.weight'], file=f_params)
-                # print(params['conv2.bias'], file=f_params)
-                # f_params.close()
-                #
-                # f_params = open('./params_fc1.txt', 'a')
-                # print(params['fc1.weight'], file=f_params)
-                # print(params['fc1.bias'], file=f_params)
-                # f_params.close()
-                #
-                # f_params = open('./params_fc2.txt', 'a')
-                # print(params['fc2.weight'], file=f_params)
-                # print(params['fc2.bias'], file=f_params)
-                # f_params.close()
-                #
-                # f_params = open('./params_fc3.txt', 'a')
-                # print(params['fc3.weight'], file=f_params)
-                # print(params['fc3.bias'], file=f_params)
-                # f_params.close()
-
                 a_conv1 = params['conv1.weight'].cpu().numpy().flatten()
                 for i in range(conv1_params):
                     x_conv1[i].append(a_conv1[i])
@@ -145,11 +121,11 @@ class LocalUpdate(object):
                 a_fc3 = params['fc3.weight'].cpu().numpy().flatten()
                 for i in range(fc3_params):
                     x_fc3[i].append(a_fc3[i])
+                print(counter_i)
+                x[counter_i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
+                #print(len(x),len(x[counter_i]))
+                counter_i = (counter_i+1) % 4
 
-                for i in range(batch_num):
-                    x[i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
-                    #print(x[i][0],x_conv1[0])
-            #print(x[0][61700])
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss), x
