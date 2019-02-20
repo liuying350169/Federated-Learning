@@ -144,5 +144,3 @@ print("out2=",type(img_tensor))
 
 #print(dict_users[0])
 
-
-

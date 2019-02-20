@@ -244,16 +244,17 @@ if __name__ == '__main__':
         # for every select users
         # idxs_users is some numbers
         if(args.exchange == 0):
+
+
             conv1_params = 450
             conv2_params = 2400
             fc1_params = 48000
             fc2_params = 10080
             fc3_params = 840
-            x_conv1 = [[] for i in range(conv1_params)]
-            x_conv2 = [[] for i in range(conv2_params)]
-            x_fc1 = [[] for i in range(fc1_params)]
-            x_fc2 = [[] for i in range(fc2_params)]
-            x_fc3 = [[] for i in range(fc3_params)]
+            total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
+            batch_num = 4
+            x_total = [[] for i in range(total_params)]
+
 
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
@@ -264,31 +265,27 @@ if __name__ == '__main__':
                 # train_test_validate has [] [] []
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
                 # LocalUpdate initial
-                w, loss = local.update_weights(net=copy.deepcopy(net_glob))
+                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
                 # use global to train
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
+                ### x is 4 params lists
+                for j in range(batch_num):
+                    for i in range(total_params):
+                        x_total[i].append(x[j][i])
+                    #print(len(x_total),len(x_total[0]),len(x_total[0][0]),x_total[0][0][0])
 
-                params = w
-                f_params = open('./params_conv1.txt', 'a')
-                print(params['conv1.weight'], file=f_params)
-                print(params['conv1.bias'], file=f_params)
-                f_params.close()
-
-                a_conv1 = params['conv1.weight'].cpu().numpy().flatten()
-                for i in range(conv1_params):
-                    x_conv1[i].append(a_conv1[i])
-
-
-                if(idx%100==0):
-                    f_mean_std = open('./mean_std_conv1.txt', 'a')
-                    f_mean_var = open('./mean_var_conv1.txt', 'a')
+                if (idx % 2 == 0):
+                    f_mean_std = open('./mean_std.txt', 'a')
+                    f_mean_var = open('./mean_var.txt', 'a')
                     res_var = []
                     res_std = []
-                    for i in range(conv1_params):
-                        res_var.append(np.var(x_conv1[i]))
-                        res_std.append(np.std(x_conv1[i], ddof=1))
+                    for i in range(total_params):
+                        res_var.append(np.var(x_total[i]))
+                        res_std.append(np.std(x_total[i], ddof=1))
 
+                    #print(res_var)
+                    #print(res_std)
                     mean_var = np.mean(res_var)
                     print(mean_var, file=f_mean_var)
                     mean_std = np.mean(res_std)
@@ -296,108 +293,9 @@ if __name__ == '__main__':
                     f_mean_std.close()
                     f_mean_var.close()
 
-                params = w
-                f_params = open('./params_conv2.txt', 'a')
-                print(params['conv2.weight'], file=f_params)
-                print(params['conv2.bias'], file=f_params)
-                f_params.close()
 
-                a_conv2 = params['conv2.weight'].cpu().numpy().flatten()
-                for i in range(conv2_params):
-                    x_conv2[i].append(a_conv2[i])
 
-                if(idx%100==0):
-                    f_mean_std = open('./mean_std_conv2.txt', 'a')
-                    f_mean_var = open('./mean_var_conv2.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(conv2_params):
-                        res_var.append(np.var(x_conv2[i]))
-                        res_std.append(np.std(x_conv2[i], ddof=1))
 
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-                params = w
-                f_params = open('./params_fc1.txt', 'a')
-                print(params['fc1.weight'], file=f_params)
-                print(params['fc1.bias'], file=f_params)
-                f_params.close()
-
-                a_fc1 = params['fc1.weight'].cpu().numpy().flatten()
-                for i in range(fc1_params):
-                    x_fc1[i].append(a_fc1[i])
-
-                if(idx%100==0):
-                    f_mean_std = open('./mean_std_fc1.txt', 'a')
-                    f_mean_var = open('./mean_var_fc1.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(fc1_params):
-                        res_var.append(np.var(x_fc1[i]))
-                        res_std.append(np.std(x_fc1[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-                params = w
-                f_params = open('./params_fc2.txt', 'a')
-                print(params['fc2.weight'], file=f_params)
-                print(params['fc2.bias'], file=f_params)
-                f_params.close()
-
-                a_fc2 = params['fc2.weight'].cpu().numpy().flatten()
-                for i in range(fc2_params):
-                    x_fc2[i].append(a_fc2[i])
-
-                if(idx%100==0):
-                    f_mean_std = open('./mean_std_fc2.txt', 'a')
-                    f_mean_var = open('./mean_var_fc2.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(fc2_params):
-                        res_var.append(np.var(x_fc2[i]))
-                        res_std.append(np.std(x_fc2[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-                params = w
-                f_params = open('./params_fc3.txt', 'a')
-                print(params['fc3.weight'], file=f_params)
-                print(params['fc3.bias'], file=f_params)
-                f_params.close()
-
-                a = params['fc3.weight'].cpu().numpy().flatten()
-                for i in range(fc3_params):
-                    x_fc3[i].append(a[i])
-                if(idx%100==0):
-                    f_mean_std = open('./mean_std_fc3.txt', 'a')
-                    f_mean_var = open('./mean_var_fc3.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(fc3_params):
-                        res_var.append(np.var(x_fc3[i]))
-                        res_std.append(np.std(x_fc3[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
 
 
                 # w_locals is [], an empty []
@@ -416,61 +314,6 @@ if __name__ == '__main__':
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
-
-                torch.save(w, 'last_model_92_sgd.txt')
-                params = w
-                f_params = open('./params_conv1.txt', 'a')
-                print(params['conv1.weight'], file=f_params)
-                print(params['conv1.bias'], file=f_params)
-                f_params.close()
-
-                a = params['conv1.weight'].cpu().numpy().flatten()
-
-                for i in range(450):
-                    x[i].append(a[i])
-
-                if(idx%100==0):
-                    f_mean = open('./mean_conv1.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(450):
-                        res_var.append(np.var(x[i]))
-                        res_std.append(np.std(x[i],ddof=1))
-
-                    #print(res_var)
-                    #print(res_std)
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var,file=f_mean)
-                    mean_std = np.mean(res_std)
-                    print(mean_std,file=f_mean)
-                    f_mean.close()
-
-                params = w
-                f_params = open('./params_conv2.txt', 'a')
-                print(params['conv2.weight'], file=f_params)
-                print(params['conv2.bias'], file=f_params)
-                f_params.close()
-
-                params = w
-                f_params = open('./params_fc1.txt', 'a')
-                print(params['fc1.weight'], file=f_params)
-                print(params['fc1.bias'], file=f_params)
-                f_params.close()
-
-                params = w
-                f_params = open('./params_fc2.txt', 'a')
-                print(params['fc2.weight'], file=f_params)
-                print(params['fc2.bias'], file=f_params)
-                f_params.close()
-
-                params = w
-                f_params = open('./params_fc3.txt', 'a')
-                print(params['fc3.weight'], file=f_params)
-                print(params['fc3.bias'], file=f_params)
-                f_params.close()
-
-
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
 

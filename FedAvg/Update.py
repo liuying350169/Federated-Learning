@@ -74,12 +74,16 @@ class LocalUpdate(object):
         fc1_params = 48000
         fc2_params = 10080
         fc3_params = 840
+        batch_num = 4
+        x = [[] for i in range(batch_num)]
         x_conv1 = [[] for i in range(conv1_params)]
         x_conv2 = [[] for i in range(conv2_params)]
         x_fc1 = [[] for i in range(fc1_params)]
         x_fc2 = [[] for i in range(fc2_params)]
         x_fc3 = [[] for i in range(fc3_params)]
+
         for iter in range(self.args.local_ep):
+            #print(iter)
             batch_loss = []
             #enumerate is meijv, means for everyone
             for batch_idx, (images, labels) in enumerate(self.ldr_train):
@@ -95,7 +99,6 @@ class LocalUpdate(object):
                     loss = loss.cpu()
                 self.tb.add_scalar('loss', loss.item())
                 batch_loss.append(loss.item())
-
 #for every batch, collect the params of each layers
                 params = net.state_dict()
                 f_params = open('./params_conv1.txt', 'a')
@@ -143,88 +146,13 @@ class LocalUpdate(object):
                 for i in range(fc3_params):
                     x_fc3[i].append(a_fc3[i])
 
-                if (idx % 100 == 0):
-                    f_mean_std = open('./mean_std_conv1.txt', 'a')
-                    f_mean_var = open('./mean_var_conv1.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(conv1_params):
-                        res_var.append(np.var(x_conv1[i]))
-                        res_std.append(np.std(x_conv1[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-                if (idx % 100 == 0):
-                    f_mean_std = open('./mean_std_conv2.txt', 'a')
-                    f_mean_var = open('./mean_var_conv2.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(conv2_params):
-                        res_var.append(np.var(x_conv2[i]))
-                        res_std.append(np.std(x_conv2[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-
-                    f_mean_std = open('./mean_std_fc1.txt', 'a')
-                    f_mean_var = open('./mean_var_fc1.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(fc1_params):
-                        res_var.append(np.var(x_fc1[i]))
-                        res_std.append(np.std(x_fc1[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-                    f_mean_std = open('./mean_std_fc2.txt', 'a')
-                    f_mean_var = open('./mean_var_fc2.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(fc2_params):
-                        res_var.append(np.var(x_fc2[i]))
-                        res_std.append(np.std(x_fc2[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
-                if (idx % 100 == 0):
-                    f_mean_std = open('./mean_std_fc3.txt', 'a')
-                    f_mean_var = open('./mean_var_fc3.txt', 'a')
-                    res_var = []
-                    res_std = []
-                    for i in range(fc3_params):
-                        res_var.append(np.var(x_fc3[i]))
-                        res_std.append(np.std(x_fc3[i], ddof=1))
-
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
-                    f_mean_std.close()
-                    f_mean_var.close()
-
+                for i in range(batch_num):
+                    x[i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
+                    #print(x[i][0],x_conv1[0])
+            #print(x[0][61700])
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
-        return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
+        return net.state_dict(), sum(epoch_loss) / len(epoch_loss), x
 
     def exchange_weight(self, net):
         net.train()
