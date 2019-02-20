@@ -101,30 +101,30 @@ class LocalUpdate(object):
                 batch_loss.append(loss.item())
 #for every batch, collect the params of each layers
                 params = net.state_dict()
-                f_params = open('./params_conv1.txt', 'a')
-                print(params['conv1.weight'], file=f_params)
-                print(params['conv1.bias'], file=f_params)
-                f_params.close()
-
-                f_params = open('./params_conv2.txt', 'a')
-                print(params['conv2.weight'], file=f_params)
-                print(params['conv2.bias'], file=f_params)
-                f_params.close()
-
-                f_params = open('./params_fc1.txt', 'a')
-                print(params['fc1.weight'], file=f_params)
-                print(params['fc1.bias'], file=f_params)
-                f_params.close()
-
-                f_params = open('./params_fc2.txt', 'a')
-                print(params['fc2.weight'], file=f_params)
-                print(params['fc2.bias'], file=f_params)
-                f_params.close()
-
-                f_params = open('./params_fc3.txt', 'a')
-                print(params['fc3.weight'], file=f_params)
-                print(params['fc3.bias'], file=f_params)
-                f_params.close()
+                # f_params = open('./params_conv1.txt', 'a')
+                # print(params['conv1.weight'], file=f_params)
+                # print(params['conv1.bias'], file=f_params)
+                # f_params.close()
+                #
+                # f_params = open('./params_conv2.txt', 'a')
+                # print(params['conv2.weight'], file=f_params)
+                # print(params['conv2.bias'], file=f_params)
+                # f_params.close()
+                #
+                # f_params = open('./params_fc1.txt', 'a')
+                # print(params['fc1.weight'], file=f_params)
+                # print(params['fc1.bias'], file=f_params)
+                # f_params.close()
+                #
+                # f_params = open('./params_fc2.txt', 'a')
+                # print(params['fc2.weight'], file=f_params)
+                # print(params['fc2.bias'], file=f_params)
+                # f_params.close()
+                #
+                # f_params = open('./params_fc3.txt', 'a')
+                # print(params['fc3.weight'], file=f_params)
+                # print(params['fc3.bias'], file=f_params)
+                # f_params.close()
 
                 a_conv1 = params['conv1.weight'].cpu().numpy().flatten()
                 for i in range(conv1_params):
