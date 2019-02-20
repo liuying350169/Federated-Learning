@@ -244,8 +244,6 @@ if __name__ == '__main__':
         # for every select users
         # idxs_users is some numbers
         if(args.exchange == 0):
-
-
             conv1_params = 450
             conv2_params = 2400
             fc1_params = 48000
@@ -254,7 +252,6 @@ if __name__ == '__main__':
             total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
             batch_num = 4
             x_total = [[] for i in range(total_params)]
-
 
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
@@ -266,25 +263,24 @@ if __name__ == '__main__':
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
                 # LocalUpdate initial
                 w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
-                # use global to train
+                # use global to trainde
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
                 ### x is 4 params lists
                 #print(len(x), len(x[0]), len(x[0][0]),x[0][0][0], x[0][0], x[0])
-
                 for j in range(batch_num):
                     for i in range(total_params):
                         x_total[i].append(x[j][i][0])
-
+                    #print(len(x_total[0]))
                 if (idx % 100 == 0):
                     f_mean_std = open('./mean_std.txt', 'a')
                     f_mean_var = open('./mean_var.txt', 'a')
                     res_var = []
                     res_std = []
                     for i in range(total_params):
-                        #print(np.var(x_total[i]))
                         res_var.append(np.var(x_total[i]))
                         res_std.append(np.std(x_total[i], ddof=1))
+
 
                     mean_var = np.mean(res_var)
                     print(mean_var, file=f_mean_var)
@@ -292,26 +288,21 @@ if __name__ == '__main__':
                     print(mean_std, file=f_mean_std)
                     f_mean_std.close()
                     f_mean_var.close()
-
                 # w_locals is [], an empty []
                 # w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
                 # loss_locals is [], an empty []
                 # loss_locals save the loss
                 loss_locals.append(copy.deepcopy(loss))
-
-
             # w_locals and loss_locals return all select idxs_users
 
         elif(args.exchange == 1):
-            x = [[] for i in range(450)]
             for idx in tqdm(idxs_users):
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx,
                                     tb=summary)
                 w, loss = local.exchange_weight(net=copy.deepcopy(net_glob))
                 w_locals.append(copy.deepcopy(w))
                 loss_locals.append(copy.deepcopy(loss))
-
         # update global weights
         # average_weights all w_locals in every epoch
         w_glob = average_weights(w_locals)
@@ -320,8 +311,6 @@ if __name__ == '__main__':
 
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
-
-
         # print loss
         # calculate avg_loss
         loss_avg = sum(loss_locals) / len(loss_locals)
@@ -359,6 +348,7 @@ if __name__ == '__main__':
         print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg))
         print("iter:{} | Train loss:{} | average acc: {:.2f}%".format(iter, loss_avg, acc_avg), file=f)
         f.close()
+
         loss_train.append(loss_avg)
         acc_train.append(acc_avg)
 

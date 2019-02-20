@@ -121,7 +121,7 @@ class LocalUpdate(object):
                 a_fc3 = params['fc3.weight'].cpu().numpy().flatten()
                 for i in range(fc3_params):
                     x_fc3[i].append(a_fc3[i])
-                #print(counter_i)
+
                 x[counter_i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
                 counter_i = (counter_i+1) % 4
 
@@ -172,8 +172,6 @@ class LocalUpdate(object):
                     i = int(group * 10 + iter)
                 if(group % 2 == 1):  # odd
                     i = int((group-1)*10 +iter)
-
-
 
             ldr_train, ldr_val, ldr_test = self.train_val_test(self.dataset, self.testset, list(idxs[i]))
             for iter_ep in range(self.args.local_ep):
