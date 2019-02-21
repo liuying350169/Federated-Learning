@@ -272,12 +272,12 @@ if __name__ == '__main__':
                     x_time[i] = x_total
                 for j in range(batch_num):
                     for i in range(total_params):
-                        x_time[j][i].append(x[j][i][0])
+                        x_time[j][i].append(x[j][i][len(x[j][i])-2])
                     #print(len(x_time),len(x_time[0]))
 
                 if (idx % 2 == 0):
-                    f_mean_std = open('./mean_std02211047.txt', 'a')
-                    f_mean_var = open('./mean_var02211047.txt', 'a')
+                    f_mean_std = open('./mean_std02211133.txt', 'a')
+                    f_mean_var = open('./mean_var02211133.txt', 'a')
                     res_var = [[] for i in range(batch_num)]
                     res_std = [[] for i in range(batch_num)]
                     for j in range(batch_num):

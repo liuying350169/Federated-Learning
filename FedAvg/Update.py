@@ -123,9 +123,10 @@ class LocalUpdate(object):
 
                 x[counter_i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
                 counter_i = (counter_i+1) % batch_num
-
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
+        # for i in range(120):
+        #     print(len(x), len(x[0]),len(x[i][0]), x[i][0][len(x[i][0])-2])
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss), x
 
     def exchange_weight(self, net):
