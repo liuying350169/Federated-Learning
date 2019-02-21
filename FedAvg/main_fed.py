@@ -276,8 +276,8 @@ if __name__ == '__main__':
                     print(len(x_time),len(x_time[0]))
 
                 if (idx % 100 == 0):
-                    f_mean_std = open('./mean_std.txt', 'a')
-                    f_mean_var = open('./mean_var.txt', 'a')
+                    f_mean_std = open('./mean_std02211017.txt', 'a')
+                    f_mean_var = open('./mean_var02211017.txt', 'a')
                     res_var = []
                     res_std = []
                     for j in range(batch_num):
