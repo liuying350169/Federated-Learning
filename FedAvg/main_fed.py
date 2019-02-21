@@ -252,7 +252,7 @@ if __name__ == '__main__':
             total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
             batch_num = 120
             x_total = [[] for i in range(total_params)]
-
+            x_time = [[] for i in range(batch_num)]
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
                 # allids.append(idx)
@@ -268,20 +268,22 @@ if __name__ == '__main__':
                 # loss is the sum(epoch_loss) / len(epoch_loss)
                 ### x is 4 params lists
                 #print(len(x), len(x[0]), len(x[0][0]),x[0][0][0], x[0][0], x[0])
+                for i in range(batch_num):
+                    x_time[i] = x_total
                 for j in range(batch_num):
                     for i in range(total_params):
-                        x_total[i].append(x[j][i][0])
-                    #print(len(x_total[0]))
+                        x_time[j][i].append(x[j][i][0])
+                    print(len(x_time),len(x_time[0]))
+
                 if (idx % 100 == 0):
                     f_mean_std = open('./mean_std.txt', 'a')
                     f_mean_var = open('./mean_var.txt', 'a')
                     res_var = []
                     res_std = []
-                    for i in range(total_params):
-                        res_var.append(np.var(x_total[i]))
-                        res_std.append(np.std(x_total[i], ddof=1))
-
-
+                    for j in range(batch_num):
+                        for i in range(total_params):
+                            res_var.append(np.var(x_time[j][i]))
+                            res_std.append(np.std(x_time[j][i], ddof=1))
                     mean_var = np.mean(res_var)
                     print(mean_var, file=f_mean_var)
                     mean_std = np.mean(res_std)

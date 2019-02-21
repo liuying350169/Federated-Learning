@@ -122,7 +122,7 @@ class LocalUpdate(object):
                     x_fc3[i].append(a_fc3[i])
 
                 x[counter_i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
-                counter_i = (counter_i+1) % 120
+                counter_i = (counter_i+1) % batch_num
 
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
