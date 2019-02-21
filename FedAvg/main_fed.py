@@ -276,18 +276,18 @@ if __name__ == '__main__':
                     print(len(x_time),len(x_time[0]))
 
                 if (idx % 100 == 0):
-                    f_mean_std = open('./mean_std02211017.txt', 'a')
-                    f_mean_var = open('./mean_var02211017.txt', 'a')
-                    res_var = []
-                    res_std = []
+                    f_mean_std = open('./mean_std02211036.txt', 'a')
+                    f_mean_var = open('./mean_var02211036.txt', 'a')
+                    res_var = [[] for i in range(batch_num)]
+                    res_std = [[] for i in range(batch_num)]
                     for j in range(batch_num):
                         for i in range(total_params):
-                            res_var.append(np.var(x_time[j][i]))
-                            res_std.append(np.std(x_time[j][i], ddof=1))
-                    mean_var = np.mean(res_var)
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std)
-                    print(mean_std, file=f_mean_std)
+                            res_var[j].append(np.var(x_time[j][i]))
+                            res_std[j].append(np.std(x_time[j][i], ddof=1))
+                        mean_var = np.mean(res_var[j])
+                        print(mean_var, file=f_mean_var)
+                        mean_std = np.mean(res_std[j])
+                        print(mean_std, file=f_mean_std)
                     f_mean_std.close()
                     f_mean_var.close()
                 # w_locals is [], an empty []
