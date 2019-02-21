@@ -273,7 +273,7 @@ if __name__ == '__main__':
                 for j in range(batch_num):
                     for i in range(total_params):
                         x_time[j][i].append(x[j][i][0])
-                    print(len(x_time),len(x_time[0]))
+                    #print(len(x_time),len(x_time[0]))
 
                 if (idx % 2 == 0):
                     f_mean_std = open('./mean_std02211047.txt', 'a')
