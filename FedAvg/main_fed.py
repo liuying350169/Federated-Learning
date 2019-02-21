@@ -250,7 +250,7 @@ if __name__ == '__main__':
             fc2_params = 10080
             fc3_params = 840
             total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
-            batch_num = 4
+            batch_num = 120
             x_total = [[] for i in range(total_params)]
 
             for idx in tqdm(idxs_users):
