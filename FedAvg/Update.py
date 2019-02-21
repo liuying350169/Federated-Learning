@@ -74,7 +74,7 @@ class LocalUpdate(object):
         fc1_params = 48000
         fc2_params = 10080
         fc3_params = 840
-        batch_num = 120
+        batch_num = 4
         x = [[] for i in range(batch_num)]
         x_conv1 = [[] for i in range(conv1_params)]
         x_conv2 = [[] for i in range(conv2_params)]
@@ -122,11 +122,18 @@ class LocalUpdate(object):
                     x_fc3[i].append(a_fc3[i])
 
                 x[counter_i] = np.concatenate((x_conv1, x_conv2, x_fc1, x_fc2, x_fc3), axis=0)
+                x_conv1 = [[] for i in range(conv1_params)]
+                x_conv2 = [[] for i in range(conv2_params)]
+                x_fc1 = [[] for i in range(fc1_params)]
+                x_fc2 = [[] for i in range(fc2_params)]
+                x_fc3 = [[] for i in range(fc3_params)]
                 counter_i = (counter_i+1) % batch_num
+
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
 
         # for i in range(120):
         #     print(len(x), len(x[0]),len(x[i][0]), x[i][0][len(x[i][0])-2])
+        #print(x[0][0][0],x[1][0][0],x[2][0][0],x[3][0][0])
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss), x
 
     def exchange_weight(self, net):

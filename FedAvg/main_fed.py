@@ -250,9 +250,13 @@ if __name__ == '__main__':
             fc2_params = 10080
             fc3_params = 840
             total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
-            batch_num = 120
+            batch_num = 4
             x_total = [[] for i in range(total_params)]
             x_time = [[] for i in range(batch_num)]
+            for i in range(batch_num):
+                x_time[i] = x_total
+
+            counter_i = 0
             for idx in tqdm(idxs_users):
                 # print("user num id",idx)
                 # allids.append(idx)
@@ -268,28 +272,74 @@ if __name__ == '__main__':
                 # loss is the sum(epoch_loss) / len(epoch_loss)
                 ### x is 4 params lists
                 #print(len(x), len(x[0]), len(x[0][0]),x[0][0][0], x[0][0], x[0])
-                for i in range(batch_num):
-                    x_time[i] = x_total
-                for j in range(batch_num):
-                    for i in range(total_params):
-                        x_time[j][i].append(x[j][i][len(x[j][i])-2])
-                    #print(len(x_time),len(x_time[0]))
+                #print(x[j][i][len(x[j][i])-2])
+                print(x[0][0][0], x[1][0][0], x[2][0][0], x[3][0][0])
+                #表示x的四个batch时态的值，第二个0表示61770个参数中的第0位，最后一个0实际上没有意义，因为他就是一个【值】
+                #所以最后要把61770个参数摊平到61770个list中，这61770个list叫做 x_total
 
-                if (idx % 2 == 0):
-                    f_mean_std = open('./mean_std02211133.txt', 'a')
-                    f_mean_var = open('./mean_var02211133.txt', 'a')
+                ###version 1
+                # for j in range(batch_num):
+                #     for i in range(total_params):
+                #         x_total[i].append(x[j][i][0])
+                #     x_time[j] = x_total
+                #     x_total = [[] for i in range(total_params)]
+
+                ###version 2
+                for i in range(batch_num):
+                    for j in range(total_params):
+                        x_time[i][j].append(x[i][j][0])
+
+
+                # print(x_time[0][0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
+                # print(x_time[0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
+                # print(len(x_time),len(x_time[0]),len(x_time[0][0]))
+
+                # for i in range(batch_num):
+                #     for j in range(total_params):
+                #         x_time1[i][j]
+
+
+
+                    #print(x[j][i][0], x[j][i][len(x[j][i])-2])
+                #print(len(x_time[j][i]), x_time[j][i])
+
+                if (counter_i % 100 == 0):
+
+                    f_mean_std = open('./mean_std02211449.txt', 'a')
+                    f_mean_var = open('./mean_var02211449.txt', 'a')
                     res_var = [[] for i in range(batch_num)]
                     res_std = [[] for i in range(batch_num)]
+
                     for j in range(batch_num):
                         for i in range(total_params):
-                            res_var[j].append(np.var(x_time[j][i]))
-                            res_std[j].append(np.std(x_time[j][i], ddof=1))
-                        mean_var = np.mean(res_var[j])
-                        print(mean_var, file=f_mean_var)
-                        mean_std = np.mean(res_std[j])
-                        print(mean_std, file=f_mean_std)
+
+                            temp_var = np.var(x_time[j][i])
+
+                            temp_std = np.std(x_time[j][i], ddof=1)
+
+                            res_var[j].append(temp_var)
+
+                            res_std[j].append(temp_std)
+                        #print(x_time[0][0][0],x_time[1][0][0],x_time[2][0][0],x_time[3][0][0])
+                        #print(temp_var)
+                            #print(len(res_var[j]))
+
+                    #print(len(res_var[0]),res_var[0][0],len(res_var[1]),res_var[1][0],len(res_var[2]),res_var[2][0],len(res_var[3]),res_var[3][0])
+                    #print(len(res_var[j]),j,res_var[j][0:10])
+
+                    mean_var = np.mean(res_var[j])
+                    print(mean_var, file=f_mean_var)
+                    mean_std = np.mean(res_std[j])
+                    print(mean_std, file=f_mean_std)
+                    #print("mean_var", mean_var)
+                    #print("mean_std", mean_std)
+                    res_var[j] = []
+                    res_std[j] = []
                     f_mean_std.close()
                     f_mean_var.close()
+
+
+                counter_i = counter_i + 1
                 # w_locals is [], an empty []
                 # w_locals save the local weight
                 w_locals.append(copy.deepcopy(w))
