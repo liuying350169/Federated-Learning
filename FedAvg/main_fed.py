@@ -215,8 +215,9 @@ if __name__ == '__main__':
     else:
         exit('Error: unrecognized model')
     print(net_glob)
+    net_glob_old = net_glob
     net_glob.train()
-
+    net_glob_old.train()
     # copy weights
     w_glob = net_glob.state_dict()
 
@@ -272,7 +273,8 @@ if __name__ == '__main__':
                 # LocalUpdate initial
                 ###***###
                 #w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
-                w, loss, x = local.update_weights(net=copy.deepcopy(w_locals_old[idx]))
+                net_glob_old.load_state_dict(w_locals_old[idx])
+                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
                 ###***###
                 # use global to trainde
                 # w is local model's state_dict(), means the weight of local model
