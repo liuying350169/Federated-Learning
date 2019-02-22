@@ -232,6 +232,10 @@ if __name__ == '__main__':
     val_acc_list, net_list = [], []
     # tqdm jin du tiao
     # allids = []
+    w_locals_old = []
+    for i in range(100):
+        w_locals_old.append(copy.deepcopy(w_glob))
+    #w_locals_old初始化
     for iter in tqdm(range(args.epochs)):
         w_locals, loss_locals = [], []
         if(args.num_users <= 10):
@@ -266,7 +270,10 @@ if __name__ == '__main__':
                 # train_test_validate has [] [] []
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
                 # LocalUpdate initial
-                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                ###***###
+                #w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                w, loss, x = local.update_weights(net=copy.deepcopy(w_locals_old[idx]))
+                ###***###
                 # use global to trainde
                 # w is local model's state_dict(), means the weight of local model
                 # loss is the sum(epoch_loss) / len(epoch_loss)
@@ -288,8 +295,6 @@ if __name__ == '__main__':
                 for i in range(batch_num):
                     for j in range(total_params):
                         x_time[i][j].append(x[i][j][0])
-
-
                 # print(x_time[0][0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
                 # print(x_time[0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
                 # print(len(x_time),len(x_time[0]),len(x_time[0][0]))
@@ -297,8 +302,6 @@ if __name__ == '__main__':
                 # for i in range(batch_num):
                 #     for j in range(total_params):
                 #         x_time1[i][j]
-
-
 
                     #print(x[j][i][0], x[j][i][len(x[j][i])-2])
                 #print(len(x_time[j][i]), x_time[j][i])
@@ -338,7 +341,6 @@ if __name__ == '__main__':
                     f_mean_std.close()
                     f_mean_var.close()
 
-
                 counter_i = counter_i + 1
                 # w_locals is [], an empty []
                 # w_locals save the local weight
@@ -357,8 +359,8 @@ if __name__ == '__main__':
                 loss_locals.append(copy.deepcopy(loss))
         # update global weights
         # average_weights all w_locals in every epoch
+        w_locals_old = w_locals
         w_glob = average_weights(w_locals)
-
         # here can use other ways to average
 
         # copy weight to net_glob
