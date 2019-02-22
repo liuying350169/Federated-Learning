@@ -308,8 +308,8 @@ if __name__ == '__main__':
 
                 if (counter_i % 100 == 0):
 
-                    f_mean_std = open('./mean_std02211757.txt', 'a')
-                    f_mean_var = open('./mean_var02211757.txt', 'a')
+                    f_mean_std = open('./mean_std02221108.txt', 'a')
+                    f_mean_var = open('./mean_var02221108.txt', 'a')
                     res_var = [[] for i in range(batch_num)]
                     res_std = [[] for i in range(batch_num)]
 
