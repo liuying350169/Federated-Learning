@@ -85,6 +85,44 @@ class CNNCifar(nn.Module):
         x = self.fc3(x)
         return x
 
+#class CNNCifar_new(nn.Module):
+    # # 训练参数
+    # learning_rate = 0.001
+    # num_steps = 200
+    # batch_size = 128
+    # display_step = 10
+    #
+    # # 网络参数
+    # #MNIST 数据维度
+    # num_input = 784
+    # #MNIST 列标数量
+    # num_classes = 10
+    # #神经元保留率
+    # dropout = 0.75
+    # # 卷积神经网络
+    # def conv_net(x, weights, biases, dropout):
+    #     x = tf.reshape(x, shape=[-1, 28, 28, 1])
+    #     # 第一层卷积
+    #     conv1 = conv2d(x, weights['wc1'], biases['bc1'])
+    #     # 第二层池化
+    #     conv1 = maxpool2d(conv1, k=2)
+    #
+    #     # 第三层卷积
+    #     conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
+    #     # 第四层池化
+    #     conv2 = maxpool2d(conv2, k=2)
+    #
+    #     #全连接层
+    #     fc1 = tf.reshape(conv2, [-1, weights['wd1'].get_shape().as_list()[0]])
+    #     fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
+    #     fc1 = tf.nn.relu(fc1)
+    #     #丢弃
+    #     fc1 = tf.nn.dropout(fc1, dropout)
+    #
+    #     #输出层，输出最后的结果
+    #     out = tf.add(tf.matmul(fc1, weights['out']), biases['out'])
+    #     return out
+
 
 ######3######ResNet for cifar10
 class BasicBlock(nn.Module):

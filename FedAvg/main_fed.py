@@ -256,6 +256,7 @@ if __name__ == '__main__':
             fc3_params = 840
             total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
             batch_num = 4
+            #x_total = [4][61770]
             x_total = [[] for i in range(total_params)]
             x_time = [[] for i in range(batch_num)]
             for i in range(batch_num):
@@ -271,10 +272,14 @@ if __name__ == '__main__':
                 # train_test_validate has [] [] []
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
                 # LocalUpdate initial
+
                 ###***###
-                #w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
-                net_glob_old.load_state_dict(w_locals_old[idx])
-                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
+                #不关闭同步，下一个round
+                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                # 关闭同步，各自训练
+                #net_glob_old.load_state_dict(w_locals_old[idx])
+                #w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
+
                 ###***###
                 # use global to trainde
                 # w is local model's state_dict(), means the weight of local model
@@ -286,18 +291,24 @@ if __name__ == '__main__':
                 #表示x的四个batch时态的值，第二个0表示61770个参数中的第0位，最后一个0实际上没有意义，因为他就是一个【值】
                 #所以最后要把61770个参数摊平到61770个list中，这61770个list叫做 x_total
 
+                #print()
                 ###version 1
                 # for j in range(batch_num):
                 #     for i in range(total_params):
                 #         x_total[i].append(x[j][i][0])
+                #         #print(i,x_total[i])
                 #     x_time[j] = x_total
-                #     x_total = [[] for i in range(total_params)]
+
+                #print(j,x_time[j][0][0])
+                #x_total = [[] for i in range(total_params)]
 
                 ###version 2
                 for i in range(batch_num):
                     for j in range(total_params):
                         x_time[i][j].append(x[i][j][0])
-                # print(x_time[0][0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
+
+
+                #print(x_time[0][0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
                 # print(x_time[0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
                 # print(len(x_time),len(x_time[0]),len(x_time[0][0]))
 
@@ -308,7 +319,7 @@ if __name__ == '__main__':
                     #print(x[j][i][0], x[j][i][len(x[j][i])-2])
                 #print(len(x_time[j][i]), x_time[j][i])
 
-                if (counter_i % 100 == 0):
+                if (counter_i % 5 == 0):
 
                     f_mean_std = open('./mean_std02221108.txt', 'a')
                     f_mean_var = open('./mean_var02221108.txt', 'a')
@@ -336,7 +347,7 @@ if __name__ == '__main__':
                     print(mean_var, file=f_mean_var)
                     mean_std = np.mean(res_std[j])
                     print(mean_std, file=f_mean_std)
-                    #print("mean_var", mean_var)
+                    print("mean_var", mean_var)
                     #print("mean_std", mean_std)
                     res_var[j] = []
                     res_std[j] = []
@@ -364,7 +375,6 @@ if __name__ == '__main__':
         w_locals_old = w_locals
         w_glob = average_weights(w_locals)
         # here can use other ways to average
-
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
         # print loss
