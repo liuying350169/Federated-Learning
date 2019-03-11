@@ -223,6 +223,12 @@ if __name__ == '__main__':
             net_glob = CNNMnist(args=args).cuda()
         else:
             net_glob = CNNMnist(args=args)
+    elif args.model == 'cnn' and args.dataset == 'fashionmnist':
+        if args.gpu != -1:
+            torch.cuda.set_device(args.gpu)
+            net_glob = CNNMnist(args=args).cuda()
+        else:
+            net_glob = CNNMnist(args=args)
     elif args.model == 'mlp':
         len_in = 1
         for x in img_size:
