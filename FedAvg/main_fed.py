@@ -94,7 +94,7 @@ if __name__ == '__main__':
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
                    ]))
-        dataset_test = datasets.FashionMNISTMNIST('../data/fashion/', train=False, download=True,
+        dataset_test = datasets.FashionMNIST('../data/fashion/', train=False, download=True,
                    transform=transforms.Compose([
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
