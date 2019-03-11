@@ -301,17 +301,17 @@ if __name__ == '__main__':
                 # LocalUpdate initial
                 net_glob_old.load_state_dict(w_locals_old[idx])
 
-
+                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
                 #是否关闭同步的条件,通过round数控制，通过分歧度控制
                 #1.要验证exc能否有效降低分歧度
                 #2.要验证non-iid数据的分歧度上升规律
-                if(iter>70):
-                    ###***###
-                    #不关闭同步，下一个round
-                    w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
-                else:
-                    # 关闭同步，各自训练
-                    w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
+                # if(iter>70):
+                #     ###***###
+                #     #不关闭同步，下一个round
+                #     w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                # else:
+                #     # 关闭同步，各自训练
+                #     w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
                 ###***###
                 # use global to trainde
                 # w is local model's state_dict(), means the weight of local model
