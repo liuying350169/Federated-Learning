@@ -10,6 +10,7 @@ import datetime
 import os
 import copy
 import numpy as np
+import torchvision
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
@@ -74,6 +75,26 @@ if __name__ == '__main__':
                        transforms.Normalize((0.1307,), (0.3081,))
                    ]))
         dataset_test = datasets.MNIST('../data/mnist/', train=False, download=True,
+                   transform=transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.1307,), (0.3081,))
+                   ]))
+        # sample users
+        if args.iid == 1:
+            dict_users = mnist_iid(dataset_train, args.num_users)
+        elif args.iid == 2:
+            #return 5 shards and each shard has 12000 imgs
+            dict_users = mnist_noniid_extram(dataset_train, args.num_users)
+        else:
+            dict_users = mnist_noniid(dataset_train, args.num_users)
+
+    elif args.dataset == 'fashionmnist':
+        dataset_train = datasets.FashionMNIST('../data/fashion/', train=True, download=True,
+                   transform=transforms.Compose([
+                       transforms.ToTensor(),
+                       transforms.Normalize((0.1307,), (0.3081,))
+                   ]))
+        dataset_test = datasets.FashionMNISTMNIST('../data/fashion/', train=False, download=True,
                    transform=transforms.Compose([
                        transforms.ToTensor(),
                        transforms.Normalize((0.1307,), (0.3081,))
@@ -272,14 +293,19 @@ if __name__ == '__main__':
                 # train_test_validate has [] [] []
                 local = LocalUpdate(args=args, dataset=dataset_train, testset=dataset_test, idxs=dict_users, i=idx, tb=summary)
                 # LocalUpdate initial
+                net_glob_old.load_state_dict(w_locals_old[idx])
 
-                ###***###
-                #不关闭同步，下一个round
-                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
-                # 关闭同步，各自训练
-                #net_glob_old.load_state_dict(w_locals_old[idx])
-                #w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
 
+                #是否关闭同步的条件,通过round数控制，通过分歧度控制
+                #1.要验证exc能否有效降低分歧度
+                #2.要验证non-iid数据的分歧度上升规律
+                if(iter>70):
+                    ###***###
+                    #不关闭同步，下一个round
+                    w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                else:
+                    # 关闭同步，各自训练
+                    w, loss, x = local.update_weights(net=copy.deepcopy(net_glob_old))
                 ###***###
                 # use global to trainde
                 # w is local model's state_dict(), means the weight of local model
@@ -311,11 +337,9 @@ if __name__ == '__main__':
                 #print(x_time[0][0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
                 # print(x_time[0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
                 # print(len(x_time),len(x_time[0]),len(x_time[0][0]))
-
                 # for i in range(batch_num):
                 #     for j in range(total_params):
                 #         x_time1[i][j]
-
                     #print(x[j][i][0], x[j][i][len(x[j][i])-2])
                 #print(len(x_time[j][i]), x_time[j][i])
 
