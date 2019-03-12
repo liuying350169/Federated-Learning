@@ -23,7 +23,7 @@ from sampling import mnist_iid, mnist_noniid, cifar_iid, mnist_noniid_extram, ci
     cifar100_iid, cifar100_noniid, cifar100_noniid_extram, KWS_iid, KWS_noniid
 from options import args_parser
 from Update import LocalUpdate
-from FedNets import MLP, CNNMnist, CNNCifar, CNNKws
+from FedNets import MLP, CNNMnist, CNNCifar, CNNKws, CNNModule
 from averaging import average_weights
 from FedNets import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 from FedNets import VGG
@@ -226,9 +226,9 @@ if __name__ == '__main__':
     elif args.model == 'cnn' and args.dataset == 'fashionmnist':
         if args.gpu != -1:
             torch.cuda.set_device(args.gpu)
-            net_glob = CNNMnist(args=args).cuda()
+            net_glob = CNNModule(args=args).cuda()
         else:
-            net_glob = CNNMnist(args=args)
+            net_glob = CNNModule(args=args)
     elif args.model == 'mlp':
         len_in = 1
         for x in img_size:
