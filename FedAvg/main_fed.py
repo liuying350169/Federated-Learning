@@ -276,18 +276,18 @@ if __name__ == '__main__':
         # for every select users
         # idxs_users is some numbers
         if(args.exchange == 0):
-            conv1_params = 450
-            conv2_params = 2400
-            fc1_params = 48000
-            fc2_params = 10080
-            fc3_params = 840
-            total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
-            batch_num = 4
-            #x_total = [4][61770]
-            x_total = [[] for i in range(total_params)]
-            x_time = [[] for i in range(batch_num)]
-            for i in range(batch_num):
-                x_time[i] = x_total
+            # conv1_params = 450
+            # conv2_params = 2400
+            # fc1_params = 48000
+            # fc2_params = 10080
+            # fc3_params = 840
+            # total_params = conv1_params+conv2_params+fc1_params+fc2_params+fc3_params
+            # batch_num = 4
+            # #x_total = [4][61770]
+            # x_total = [[] for i in range(total_params)]
+            # x_time = [[] for i in range(batch_num)]
+            # for i in range(batch_num):
+            #     x_time[i] = x_total
 
             counter_i = 0
             for idx in tqdm(idxs_users):
@@ -301,7 +301,8 @@ if __name__ == '__main__':
                 # LocalUpdate initial
                 net_glob_old.load_state_dict(w_locals_old[idx])
 
-                w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                #w, loss, x = local.update_weights(net=copy.deepcopy(net_glob))
+                w, loss = local.update_weights(net=copy.deepcopy(net_glob))
                 #是否关闭同步的条件,通过round数控制，通过分歧度控制
                 #1.要验证exc能否有效降低分歧度
                 #2.要验证non-iid数据的分歧度上升规律
@@ -335,9 +336,9 @@ if __name__ == '__main__':
                 #x_total = [[] for i in range(total_params)]
 
                 ###version 2
-                for i in range(batch_num):
-                    for j in range(total_params):
-                        x_time[i][j].append(x[i][j][0])
+                # for i in range(batch_num):
+                #     for j in range(total_params):
+                #         x_time[i][j].append(x[i][j][0])
 
 
                 #print(x_time[0][0][0], x_time[1][0][0], x_time[2][0][0], x_time[3][0][0])
@@ -349,40 +350,40 @@ if __name__ == '__main__':
                     #print(x[j][i][0], x[j][i][len(x[j][i])-2])
                 #print(len(x_time[j][i]), x_time[j][i])
 
-                if (counter_i % 5 == 0):
-
-                    f_mean_std = open('./mean_std02221108.txt', 'a')
-                    f_mean_var = open('./mean_var02221108.txt', 'a')
-                    res_var = [[] for i in range(batch_num)]
-                    res_std = [[] for i in range(batch_num)]
-
-                    for j in range(batch_num):
-                        for i in range(total_params):
-
-                            temp_var = np.var(x_time[j][i])
-
-                            temp_std = np.std(x_time[j][i], ddof=1)
-
-                            res_var[j].append(temp_var)
-
-                            res_std[j].append(temp_std)
-                        #print(x_time[0][0][0],x_time[1][0][0],x_time[2][0][0],x_time[3][0][0])
-                        #print(temp_var)
-                            #print(len(res_var[j]))
-
-                    #print(len(res_var[0]),res_var[0][0],len(res_var[1]),res_var[1][0],len(res_var[2]),res_var[2][0],len(res_var[3]),res_var[3][0])
-                    #print(len(res_var[j]),j,res_var[j][0:10])
-
-                    mean_var = np.mean(res_var[j])
-                    print(mean_var, file=f_mean_var)
-                    mean_std = np.mean(res_std[j])
-                    print(mean_std, file=f_mean_std)
-                    print("mean_var", mean_var)
-                    #print("mean_std", mean_std)
-                    res_var[j] = []
-                    res_std[j] = []
-                    f_mean_std.close()
-                    f_mean_var.close()
+                # if (counter_i % 5 == 0):
+                #
+                #     f_mean_std = open('./mean_std02221108.txt', 'a')
+                #     f_mean_var = open('./mean_var02221108.txt', 'a')
+                #     res_var = [[] for i in range(batch_num)]
+                #     res_std = [[] for i in range(batch_num)]
+                #
+                #     for j in range(batch_num):
+                #         for i in range(total_params):
+                #
+                #             temp_var = np.var(x_time[j][i])
+                #
+                #             temp_std = np.std(x_time[j][i], ddof=1)
+                #
+                #             res_var[j].append(temp_var)
+                #
+                #             res_std[j].append(temp_std)
+                #         #print(x_time[0][0][0],x_time[1][0][0],x_time[2][0][0],x_time[3][0][0])
+                #         #print(temp_var)
+                #             #print(len(res_var[j]))
+                #
+                #     #print(len(res_var[0]),res_var[0][0],len(res_var[1]),res_var[1][0],len(res_var[2]),res_var[2][0],len(res_var[3]),res_var[3][0])
+                #     #print(len(res_var[j]),j,res_var[j][0:10])
+                #
+                #     mean_var = np.mean(res_var[j])
+                #     print(mean_var, file=f_mean_var)
+                #     mean_std = np.mean(res_std[j])
+                #     print(mean_std, file=f_mean_std)
+                #     print("mean_var", mean_var)
+                #     #print("mean_std", mean_std)
+                #     res_var[j] = []
+                #     res_std[j] = []
+                #     f_mean_std.close()
+                #     f_mean_var.close()
 
                 counter_i = counter_i + 1
                 # w_locals is [], an empty []

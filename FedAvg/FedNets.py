@@ -64,6 +64,7 @@ class CNNMnist(nn.Module):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return x
+
 class CNNModule(nn.Module):
     def __init__(self, args):
         super(CNNModule, self).__init__()
