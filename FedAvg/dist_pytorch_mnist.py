@@ -72,7 +72,7 @@ class Trainer(object):
 
         self.net.train()
 
-        for data, label in tqdm(self.train_loader):
+        for data, label in self.train_loader:
             data = data.to(self.device)
             label = label.to(self.device)
 
