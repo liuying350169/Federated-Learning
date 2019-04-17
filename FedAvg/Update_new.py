@@ -3,6 +3,7 @@
 # Python version: 3.6
 
 import torch
+import torch.distributed
 from torch import nn, autograd
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
