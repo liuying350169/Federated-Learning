@@ -49,12 +49,13 @@ class Accuracy(object):
 
 
 class Trainer(object):
-    def __init__(self, net, optimizer, train_loader, test_loader, device):
+    def __init__(self, net, optimizer, train_loader, test_loader, device, args):
         self.net = net
         self.optimizer = optimizer
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.device = device
+        self.args = args
 
 
     def fit(self, epochs):
@@ -69,16 +70,16 @@ class Trainer(object):
 
 
 
-    def train(self,args):
+    def train(self):
         train_loss = Average()
         train_acc = Accuracy()
         self.net.train()
 
-        if(args.rank==0):
+        if(self.args.rank==0):
             print("rank = 0")
-        if(args.rank == 1):
+        if(self.args.rank == 1):
             print("rank = 1")
-        if(args.rank == 2):
+        if(self.args.rank == 2):
             print("rank = 2")
 
         for data, label in self.train_loader:
@@ -163,7 +164,7 @@ def run(args):
 
     train_loader, test_loader = get_dataloader(args.root, args.batch_size)
 
-    trainer = Trainer(net, optimizer, train_loader, test_loader, device)
+    trainer = Trainer(net, optimizer, train_loader, test_loader, device, args)
     trainer.fit(args.epochs)
 
 
