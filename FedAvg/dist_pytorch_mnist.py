@@ -74,17 +74,16 @@ class Trainer(object):
         train_acc = Accuracy()
         self.net.train()
 
-        if (args.rank==0):
+        if(args.rank==0):
             print("rank = 0")
-        if (args.rank == 1):
+        if(args.rank == 1):
             print("rank = 1")
-        if (args.rank == 2):
+        if(args.rank == 2):
             print("rank = 2")
 
         for data, label in self.train_loader:
             data = data.to(self.device)
             label = label.to(self.device)
-            if()
 
             output = self.net(data)
             loss = F.cross_entropy(output, label)
