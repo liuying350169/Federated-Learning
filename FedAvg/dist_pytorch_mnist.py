@@ -58,7 +58,9 @@ class Trainer(object):
         self.args = args
 
 
+
     def fit(self, epochs):
+
         for epoch in range(1, epochs + 1):
             train_loss, train_acc = self.train()
             test_loss, test_acc = self.evaluate()
@@ -71,6 +73,7 @@ class Trainer(object):
 
 
     def train(self):
+        #every epoch
         train_loss = Average()
         train_acc = Accuracy()
         self.net.train()
@@ -147,6 +150,7 @@ def get_dataloader(root, batch_size):
         batch_size=batch_size,
         shuffle=False)
 
+    train_loader = train_loader[0:20000]
     return train_loader, test_loader
 
 
