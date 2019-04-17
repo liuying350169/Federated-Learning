@@ -3,9 +3,11 @@ from __future__ import division, print_function
 import argparse
 
 import torch
+import numpy as np
 import tqdm
 import torch.nn.functional as F
 from torch import distributed, nn
+from torch.utils.data import DataLoader, Dataset
 from torch.utils import data
 from torch.utils.data.distributed import DistributedSampler
 from torchvision import datasets, transforms
@@ -49,19 +51,57 @@ class Accuracy(object):
 
 
 class Trainer(object):
-    def __init__(self, net, optimizer, train_loader, test_loader, device, args):
+
+    line = [20000, 40000]
+
+    def __init__(self, net, optimizer, device, args):
         self.net = net
         self.optimizer = optimizer
-        self.train_loader = train_loader
-        self.test_loader = test_loader
+        # self.train_loader = train_loader
+        # self.test_loader = test_loader
         self.device = device
         self.args = args
 
+    def get_dataloader(root, batch_size, rank, line):
+        # rank is for which work
+        # line is how many offset
+        # line is [] for  p1 line0  p2 line1 p3
 
+        transform = transforms.Compose(
+            [transforms.ToTensor(),
+             transforms.Normalize((0.1307,), (0.3081,))])
+
+        train_set = datasets.MNIST(
+            root, train=True, transform=transform, download=True)
+        sampler = DistributedSampler(train_set)
+
+        # train_loader = data.DataLoader(train_set,batch_size=batch_size,shuffle=(sampler is None),sampler=sampler)
+        idxs = range(len(train_set))
+
+        if (rank == 0):
+            idxs_train = idxs[:line[0]]
+        if (rank == 1):
+            idxs_train = idxs[line[0]:line[1]]
+        if (rank == 2):
+            idxs_train = idxs[line[1]:]
+
+        train_loader = DataLoader(DatasetSplit(train_set, idxs_train), batch_size=batch_size, shuffle=True)
+
+        test_loader = data.DataLoader(datasets.MNIST(root, train=False, transform=transform, download=True),
+                                      batch_size=batch_size, shuffle=False)
+
+        return train_loader, test_loader
 
     def fit(self, epochs):
+        #line = [20000,40000]
+
 
         for epoch in range(1, epochs + 1):
+            #calculate line
+
+            if(epoch>1):
+                self.line = [30000,40000]
+
             train_loss, train_acc = self.train()
             test_loss, test_acc = self.evaluate()
 
@@ -70,8 +110,6 @@ class Trainer(object):
                 'train loss: {}, train acc: {},'.format(train_loss, train_acc),
                 'test loss: {}, test acc: {}.'.format(test_loss, test_acc))
 
-
-
     def train(self):
         #every epoch
         train_loss = Average()
@@ -79,11 +117,11 @@ class Trainer(object):
         self.net.train()
 
         if(self.args.rank==0):
-            print("rank = 0")
+            train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
         if(self.args.rank == 1):
-            print("rank = 1")
+            train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
         if(self.args.rank == 2):
-            print("rank = 2")
+            train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
 
         for data, label in self.train_loader:
             data = data.to(self.device)
@@ -98,6 +136,7 @@ class Trainer(object):
 
             train_loss.update(loss.item(), data.size(0))
             train_acc.update(output, label)
+
 
         return train_loss, train_acc
 
@@ -130,28 +169,23 @@ class Net(nn.Module):
         return self.fc(x.view(x.size(0), -1))
 
 
-def get_dataloader(root, batch_size):
-    transform = transforms.Compose(
-        [transforms.ToTensor(),
-         transforms.Normalize((0.1307, ), (0.3081, ))])
+class DatasetSplit(Dataset):
+    def __init__(self, dataset, idxs):
+        self.dataset = dataset
+        self.idxs = list(idxs)
 
-    train_set = datasets.MNIST(
-        root, train=True, transform=transform, download=True)
-    sampler = DistributedSampler(train_set)
+    def __len__(self):
+        return len(self.idxs)
 
-    train_loader = data.DataLoader(
-        train_set,
-        batch_size=batch_size,
-        shuffle=(sampler is None),
-        sampler=sampler)
+    def __getitem__(self, item):
+        #error liuying
+        #only integers, slices (`:`), ellipsis (`...`), None and long or byte Variables are valid indices (got numpy.float64)
+        #print("item",item)
+        #print("self.idxs[item]",self.idxs[item])
+        image, label = self.dataset[int(self.idxs[item])]
+        return image, label
 
-    test_loader = data.DataLoader(
-        datasets.MNIST(root, train=False, transform=transform, download=True),
-        batch_size=batch_size,
-        shuffle=False)
 
-    train_loader = train_loader[0:20000]
-    return train_loader, test_loader
 
 
 def run(args):
@@ -166,9 +200,10 @@ def run(args):
 
     optimizer = torch.optim.Adam(net.parameters(), lr=args.learning_rate)
 
-    train_loader, test_loader = get_dataloader(args.root, args.batch_size)
+    # train_loader, test_loader = get_dataloader(args.root, args.batch_size)
 
-    trainer = Trainer(net, optimizer, train_loader, test_loader, device, args)
+    trainer = Trainer(net, optimizer, device, args)
+
     trainer.fit(args.epochs)
 
 
