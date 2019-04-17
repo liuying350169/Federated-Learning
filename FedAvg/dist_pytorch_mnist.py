@@ -3,6 +3,7 @@ from __future__ import division, print_function
 import argparse
 
 import torch
+import tqdm
 import torch.nn.functional as F
 from torch import distributed, nn
 from torch.utils import data
@@ -71,7 +72,7 @@ class Trainer(object):
 
         self.net.train()
 
-        for data, label in self.train_loader:
+        for data, label in tqdm(self.train_loader):
             data = data.to(self.device)
             label = label.to(self.device)
 
