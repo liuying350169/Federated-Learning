@@ -56,6 +56,7 @@ class Trainer(object):
         self.test_loader = test_loader
         self.device = device
 
+
     def fit(self, epochs):
         for epoch in range(1, epochs + 1):
             train_loss, train_acc = self.train()
@@ -66,15 +67,24 @@ class Trainer(object):
                 'train loss: {}, train acc: {},'.format(train_loss, train_acc),
                 'test loss: {}, test acc: {}.'.format(test_loss, test_acc))
 
-    def train(self):
+
+
+    def train(self,args):
         train_loss = Average()
         train_acc = Accuracy()
-
         self.net.train()
+
+        if (args.rank==0):
+            print("rank = 0")
+        if (args.rank == 1):
+            print("rank = 1")
+        if (args.rank == 2):
+            print("rank = 2")
 
         for data, label in self.train_loader:
             data = data.to(self.device)
             label = label.to(self.device)
+            if()
 
             output = self.net(data)
             loss = F.cross_entropy(output, label)
@@ -193,7 +203,7 @@ def main():
     parser.add_argument('--no-cuda', action='store_true')
     parser.add_argument('--learning-rate', '-lr', type=float, default=1e-3)
     parser.add_argument('--root', type=str, default='data')
-    parser.add_argument('--batch-size', type=int, default=128)
+    parser.add_argument('--batch-size', type=int, default=1)
     args = parser.parse_args()
     print(args)
 
