@@ -3,6 +3,7 @@ from __future__ import division, print_function
 import argparse
 
 import torch
+import time
 import numpy as np
 import tqdm
 import torch.nn.functional as F
@@ -51,8 +52,13 @@ class Accuracy(object):
 
 
 class Trainer(object):
-
+    #default
+    # global parameter
+    world_size = 3
     line = [20000, 40000]
+    time = [-1]*world_size
+    fast_worker_list= []
+    howmanytrans = 0
 
     def __init__(self, net, optimizer, device, args):
         self.net = net
@@ -62,22 +68,21 @@ class Trainer(object):
         self.device = device
         self.args = args
 
-    def get_dataloader(root, batch_size, rank, line):
+    def get_dataloader(self, root, batch_size, rank, line):
         # rank is for which work
         # line is how many offset
         # line is [] for  p1 line0  p2 line1 p3
-
         transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize((0.1307,), (0.3081,))])
 
         train_set = datasets.MNIST(
             root, train=True, transform=transform, download=True)
-        sampler = DistributedSampler(train_set)
-
+        #sampler = DistributedSampler(train_set)
         # train_loader = data.DataLoader(train_set,batch_size=batch_size,shuffle=(sampler is None),sampler=sampler)
         idxs = range(len(train_set))
-
+        #default
+        idxs_train = idxs
         if (rank == 0):
             idxs_train = idxs[:line[0]]
         if (rank == 1):
@@ -92,52 +97,222 @@ class Trainer(object):
 
         return train_loader, test_loader
 
+    def get_new_data_loader(self, root, batch_size, rank, line, task_to_trans, task_ready, op):
+        transform = transforms.Compose(
+            [transforms.ToTensor(),
+             transforms.Normalize((0.1307,), (0.3081,))])
+
+        train_set = datasets.MNIST(
+            root, train=True, transform=transform, download=True)
+        idxs = range(len(train_set))
+        #default
+        idxs_train = idxs
+        if (rank == 0):
+            idxs_train = idxs[:line[0]]
+        if (rank == 1):
+            idxs_train = idxs[line[0]:line[1]]
+        if (rank == 2):
+            idxs_train = idxs[line[1]:]
+
+        if(op == 1):
+        #trans to others
+            task_ready += task_to_trans
+            idxs_train -= task_ready
+        elif(op == 0):
+        #trans from others
+            idxs_train += task_to_trans
+            idxs_train -= task_ready
+
+        train_loader = DataLoader(DatasetSplit(train_set, idxs_train), batch_size=batch_size, shuffle=True)
+
+        test_loader = data.DataLoader(datasets.MNIST(root, train=False, transform=transform, download=True),
+                                      batch_size=batch_size, shuffle=False)
+
+        return train_loader, test_loader
+
+    def cal_line(self,time):
+        #time is t0,t1,t2
+        # t0 , line0, t1, line1 ,t2, line2, t3, line3, ... , ...
+        t_sum = 0
+        for t in range(len(time)):
+            t_sum += time[t]
+        t_avg = t_sum/len(time)
+
+        for i in range(self.args.world_size-1):
+            time_offset = time[i]-t_avg
+            offset = abs(time_offset/t_avg)
+            if i ==0:
+                if(time_offset>=0):
+                    #slow
+                    self.line[i] = self.line[i]-(self.line[i] * offset)
+                elif(time_offset<0):
+                    #fast
+                    self.line[i] = self.line[i]+(self.line[i] * offset)
+            else:
+                now_offset = self.line[i]-self.line[i-1]
+                target_offset = self.line[i] * offset
+                if(now_offset>target_offset):
+                    #more
+                    self.line[i] = self.line[i] - (now_offset-target_offset)
+                elif(now_offset<target_offset):
+                    #less
+                    self.line[i] = self.line[i] + (target_offset-now_offset)
+                else:
+                    #bingo
+                    break
+        return self.line
+
+    #more normal situation
+    def fastworker_list(self):
+        # self.time is receive after a epoch
+        if len(self.time)< self.args.world_size/2:
+            #top 1/2
+            self.fast_worker_list.append(distributed.get_rank())
+
+    def all_reduce_min(self, schedule, group):
+        #tensor=,op=,group=
+        distributed.all_reduce(schedule, op=distributed.reduce_op.MIN, group=group)
+        return schedule
+
+    def all_reduce_max(self, schedule, group):
+        # tensor=,op=,group=
+        distributed.all_reduce(schedule, op=distributed.reduce_op.MAX, group=group)
+        return schedule
+
+    #task dist
+
     def fit(self, epochs):
         #line = [20000,40000]
-
-
+        time_begin = time.time()
+        time_consume = 0
         for epoch in range(1, epochs + 1):
             #calculate line
-
             if(epoch>1):
-                self.line = [30000,40000]
+                self.line = self.cal_line(self.time)
 
             train_loss, train_acc = self.train()
             test_loss, test_acc = self.evaluate()
+            time_end = time.time()
+            time_consume = time_end - time_begin
+            #calculate time consume t_rank
+            #time[self.args.rank-1] = time_consume
+            #self.fastworker_list()
+
+            x = []
+            if(self.time[distributed.get_rank()] == -1):
+                distributed.recv(x,src=1)
 
             print(
                 'Epoch: {}/{},'.format(epoch, epochs),
                 'train loss: {}, train acc: {},'.format(train_loss, train_acc),
                 'test loss: {}, test acc: {}.'.format(test_loss, test_acc))
 
+    def isstraggle(self,max,min):
+        # is more than 20%    max-min/min
+        if max-min>= 20:
+            return True
+        else:
+            return False
+
+
+
+
     def train(self):
         #every epoch
         train_loss = Average()
         train_acc = Accuracy()
         self.net.train()
+        train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
+        #new train_lodaer
 
-        if(self.args.rank==0):
-            train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
-        if(self.args.rank == 1):
-            train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
-        if(self.args.rank == 2):
-            train_loader, test_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
-
-        for data, label in self.train_loader:
-            data = data.to(self.device)
-            label = label.to(self.device)
-
-            output = self.net(data)
-            loss = F.cross_entropy(output, label)
-
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
-
-            train_loss.update(loss.item(), data.size(0))
-            train_acc.update(output, label)
+        #new_group #ranks & timeout
+        group_list = [i for i in range(self.args.world_size)]
+        group = distributed.new_group(group_list)
 
 
+        #needs global timeline
+        counter = 0
+        #default is 20000 sample batch_size is 1, max counter is 20000
+        time_begin = time.time()
+        total = len(train_loader)
+        while(True):
+
+            task_ready = []
+            task_all = []
+            for idx in enumerate(train_loader):
+                task_all.append(idx)
+
+            for idx, (data, label) in enumerate(train_loader):
+
+                if(counter % 100 == 0):
+                    schedule = (counter/total)*100
+
+                    if self.isstraggle(self.all_reduce_max(schedule=schedule,group=group),self.all_reduce_min(schedule=schedule,group=group)):
+                    #if len(self.fast_worker_list)>0:
+                        #calculate task_to_trans
+                        target_worker = self.fast_worker_list[0]
+                        percentage = counter / total
+                        rest_task = total-counter
+                        time_now = time.time()
+                        time_consume = time_now - time_begin
+                        time_predict = time_consume/percentage
+                        target_worker_speed = total/self.time[target_worker]
+                        local_worker_speed = total/time_predict
+                        speed_avg = (target_worker_speed+local_worker_speed)/2
+                        time_avg = rest_task/speed_avg
+                        task_to_trans = rest_task - (time_avg*local_worker_speed)
+
+
+                        rest_task_list = task_all - task_ready
+                        task_to_trans_list = rest_task_list[:task_to_trans]
+
+                        self.howmanytrans += task_to_trans
+
+                        #send trans task
+                        #x is part of rest_task
+                        #local skip "task_to_trans" samples
+
+                        x = []
+                        distributed.send(x,dst=target_worker)
+                        #train_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
+                        #delete fast_worker from list
+                        for i in range(len(self.fast_worker_list)-1):
+                            self.fast_worker_list[i] = self.fast_worker_list[i+1]
+                        #update time_consume in time
+                        self.time[target_worker] = -1
+
+                        #calculate new data_loader
+                        if(schedule == self.all_reduce_min(schedule=schedule,group=group)):
+                            op = 1
+
+                            train_loader, test_loader = self.get_new_data_loader(self.args.root, self.args.batch_size,
+                                                                    self.args.rank, self.line, task_to_trans_list, task_ready, op)
+                            break
+                        elif(schedule == self.all_reduce_max(schedule=schedule,group=group)):
+                            op = 0
+
+                            train_loader, test_loader = self.get_new_data_loader(self.args.root, self.args.batch_size,
+                                                                    self.args.rank, self.line, task_to_trans_list, task_ready, op)
+                            break
+
+                data = data.to(self.device)
+                label = label.to(self.device)
+
+                output = self.net(data)
+                loss = F.cross_entropy(output, label)
+
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+
+                train_loss.update(loss.item(), data.size(0))
+                train_acc.update(output, label)
+                counter += 1
+                task_ready.append(idx)
+
+            if(self.all_reduce_min(schedule=schedule,group=group) == 100):
+                #the min is 100 means every worker is ready
+                break
         return train_loss, train_acc
 
     def evaluate(self):
@@ -184,8 +359,6 @@ class DatasetSplit(Dataset):
         #print("self.idxs[item]",self.idxs[item])
         image, label = self.dataset[int(self.idxs[item])]
         return image, label
-
-
 
 
 def run(args):
