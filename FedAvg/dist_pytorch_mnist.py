@@ -247,7 +247,7 @@ class Trainer(object):
             for idx, (data, label) in enumerate(train_loader):
 
                 if(counter % 100 == 0):
-                    schedule = torch.Tensor((counter/total)*100)
+                    schedule = torch.Tensor([(counter/total)*100])
 
                     if self.isstraggle(self.all_reduce_max(schedule=schedule,group=group),self.all_reduce_min(schedule=schedule,group=group)):
                     #if len(self.fast_worker_list)>0:
