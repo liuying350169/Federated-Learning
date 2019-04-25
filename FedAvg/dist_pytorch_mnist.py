@@ -172,13 +172,19 @@ class Trainer(object):
     def all_reduce_min(self, schedule, group):
         #tensor=,op=,group=
         distributed.all_reduce(schedule, op=distributed.ReduceOp.MIN, group=group)
+        f = open('./print.txt', 'a')
         print("min",schedule[0])
+        print("min", schedule[0], file=f)
+        f.close()
         return schedule
 
     def all_reduce_max(self, schedule, group):
         # tensor=,op=,group=
         distributed.all_reduce(schedule, op=distributed.ReduceOp.MAX, group=group)
-        print("max", schedule[0])
+        f = open('./print.txt', 'a')
+        print("max",schedule[0])
+        print("max", schedule[0], file=f)
+        f.close()
         return schedule
 
     #task dist
@@ -278,8 +284,10 @@ class Trainer(object):
                         task_to_trans_list = rest_task_list[:task_to_trans]
 
                         self.howmanytrans += task_to_trans
+                        f = open('./print.txt','a')
                         print("howmanytrans",self.howmanytrans)
-
+                        print("howmanytrans", self.howmanytrans,file=f)
+                        f.close()
                         #send trans task
                         #x is part of rest_task
                         #local skip "task_to_trans" samples
@@ -320,7 +328,10 @@ class Trainer(object):
                 train_loss.update(loss.item(), data.size(0))
                 train_acc.update(output, label)
                 counter += 1
+                f = open('./print.txt', 'a')
                 print("counter", counter)
+                print("counter", counter,file=f)
+                f.close()
                 task_ready.append(idx)
 
             if(self.all_reduce_min(schedule=schedule,group=group) == 100):
