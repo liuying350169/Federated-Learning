@@ -218,7 +218,7 @@ class Trainer(object):
         # is more than 20%    max-min/min
         max = max[0]
         min = min[0]
-        if max-min>= 20:
+        if (max-min)/min >= 0.2:
             return True
         else:
             return False
@@ -244,6 +244,7 @@ class Trainer(object):
         #default is 20000 sample batch_size is 1, max counter is 20000
         time_begin = time.time()
         total = len(train_loader)
+        time_start = time.time()
 
         while(True):
 
@@ -262,7 +263,13 @@ class Trainer(object):
                     time.sleep(0.2)
 
                 if(counter % 100 == 0):
-                    schedule = torch.Tensor([(counter/total)*100])
+                    #all_reduce
+                    time_now = time.time()
+                    time_consume = time_now - time_start
+                    print("time_consume", time_consume)
+
+
+                    schedule = torch.Tensor([time_consume])
 
                     if self.isstraggle(self.all_reduce_max(schedule=schedule,group=group),self.all_reduce_min(schedule=schedule,group=group)):
                     #if len(self.fast_worker_list)>0:
@@ -286,7 +293,7 @@ class Trainer(object):
                         self.howmanytrans += task_to_trans
                         f = open('./print.txt','a')
                         print("howmanytrans",self.howmanytrans)
-                        print("howmanytrans", self.howmanytrans,file=f)
+                        print("howmanytrans", self.howmanytrans, file=f)
                         f.close()
                         #send trans task
                         #x is part of rest_task
