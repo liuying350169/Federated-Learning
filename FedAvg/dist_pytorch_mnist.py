@@ -257,9 +257,9 @@ class Trainer(object):
                 if self.args.rank == 0:
                     time.sleep(0)
                 elif self.args.rank == 1:
-                    time.sleep(4)
+                    time.sleep(0.4)
                 elif self.args.rank == 2:
-                    time.sleep(2)
+                    time.sleep(0.2)
 
                 if(counter % 100 == 0):
                     schedule = torch.Tensor([(counter/total)*100])
