@@ -248,6 +248,13 @@ class Trainer(object):
 
             for idx, (data, label) in enumerate(train_loader):
 
+                if self.args.rank == 0:
+                    time.sleep(0)
+                elif self.args.rank == 1:
+                    time.sleep(4)
+                elif self.args.rank == 2:
+                    time.sleep(2)
+
                 if(counter % 100 == 0):
                     schedule = torch.Tensor([(counter/total)*100])
 
