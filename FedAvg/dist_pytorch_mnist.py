@@ -171,16 +171,17 @@ class Trainer(object):
 
     def all_reduce_min(self, schedule, group):
         #tensor=,op=,group=
-        distributed.all_reduce(schedule, op=distributed.reduce_op.MIN, group=group)
+        distributed.all_reduce(schedule, op=distributed.ReduceOp.MIN, group=group)
+        print("min",schedule[0])
         return schedule
 
     def all_reduce_max(self, schedule, group):
         # tensor=,op=,group=
-        distributed.all_reduce(schedule, op=distributed.reduce_op.MAX, group=group)
+        distributed.all_reduce(schedule, op=distributed.ReduceOp.MAX, group=group)
+        print("max", schedule[0])
         return schedule
 
     #task dist
-
     def fit(self, epochs):
         #line = [20000,40000]
         time_begin = time.time()
@@ -237,6 +238,7 @@ class Trainer(object):
         #default is 20000 sample batch_size is 1, max counter is 20000
         time_begin = time.time()
         total = len(train_loader)
+
         while(True):
 
             task_ready = []
@@ -269,6 +271,7 @@ class Trainer(object):
                         task_to_trans_list = rest_task_list[:task_to_trans]
 
                         self.howmanytrans += task_to_trans
+                        print("howmanytrans",self.howmanytrans)
 
                         #send trans task
                         #x is part of rest_task
@@ -310,6 +313,7 @@ class Trainer(object):
                 train_loss.update(loss.item(), data.size(0))
                 train_acc.update(output, label)
                 counter += 1
+                print("counter", counter)
                 task_ready.append(idx)
 
             if(self.all_reduce_min(schedule=schedule,group=group) == 100):
