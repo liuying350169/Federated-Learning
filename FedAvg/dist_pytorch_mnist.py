@@ -209,6 +209,8 @@ class Trainer(object):
 
     def isstraggle(self,max,min):
         # is more than 20%    max-min/min
+        max = max[0]
+        min = min[0]
         if max-min>= 20:
             return True
         else:
@@ -245,7 +247,7 @@ class Trainer(object):
             for idx, (data, label) in enumerate(train_loader):
 
                 if(counter % 100 == 0):
-                    schedule = (counter/total)*100
+                    schedule = torch.Tensor((counter/total)*100)
 
                     if self.isstraggle(self.all_reduce_max(schedule=schedule,group=group),self.all_reduce_min(schedule=schedule,group=group)):
                     #if len(self.fast_worker_list)>0:
