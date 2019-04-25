@@ -13,7 +13,6 @@ from torch.utils import data
 from torch.utils.data.distributed import DistributedSampler
 from torchvision import datasets, transforms
 
-
 class Average(object):
     def __init__(self):
         self.sum = 0
@@ -268,10 +267,9 @@ class Trainer(object):
                     time_consume = time_now - time_start
                     print("time_consume", time_consume)
 
-
                     schedule = torch.Tensor([time_consume])
 
-                    if self.isstraggle(self.all_reduce_max(schedule=schedule,group=group),self.all_reduce_min(schedule=schedule,group=group)):
+                    if self.isstraggle(self.all_reduce_max(schedule=schedule, group=group),self.all_reduce_min(schedule=schedule, group=group)):
                     #if len(self.fast_worker_list)>0:
                         #calculate task_to_trans
                         target_worker = self.fast_worker_list[0]
@@ -286,7 +284,6 @@ class Trainer(object):
                         time_avg = rest_task/speed_avg
                         task_to_trans = rest_task - (time_avg*local_worker_speed)
 
-
                         rest_task_list = task_all - task_ready
                         task_to_trans_list = rest_task_list[:task_to_trans]
 
@@ -299,8 +296,7 @@ class Trainer(object):
                         #x is part of rest_task
                         #local skip "task_to_trans" samples
 
-                        x = []
-                        distributed.send(x,dst=target_worker)
+
                         #train_loader = self.get_dataloader(self.args.root, self.args.batch_size, self.args.rank, self.line)
                         #delete fast_worker from list
                         for i in range(len(self.fast_worker_list)-1):
@@ -311,12 +307,18 @@ class Trainer(object):
                         #calculate new data_loader
                         if(schedule == self.all_reduce_min(schedule=schedule,group=group)):
                             op = 1
+                            #send
+                            target_worker = 0
+                            distributed.isend(task_to_trans_list, dst=target_worker)
 
                             train_loader, test_loader = self.get_new_data_loader(self.args.root, self.args.batch_size,
                                                                     self.args.rank, self.line, task_to_trans_list, task_ready, op)
                             break
                         elif(schedule == self.all_reduce_max(schedule=schedule,group=group)):
                             op = 0
+                            #recv
+                            target_worker = 1
+                            distributed.irecv(task_to_trans_list, dst=target_worker)
 
                             train_loader, test_loader = self.get_new_data_loader(self.args.root, self.args.batch_size,
                                                                     self.args.rank, self.line, task_to_trans_list, task_ready, op)
@@ -337,7 +339,7 @@ class Trainer(object):
                 counter += 1
                 f = open('./print.txt', 'a')
                 print("counter", counter)
-                print("counter", counter,file=f)
+                print("counter", counter, file=f)
                 f.close()
                 task_ready.append(idx)
 
